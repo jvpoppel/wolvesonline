@@ -5,6 +5,7 @@ import {apiStartGame} from "./api/APIStartGame";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
+
 const app: express.Application = express();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
@@ -40,13 +41,13 @@ app.get("/", function (req, res) {
             START API ROUTING
 
  */
-app.post("/api/game/create", function(req, res) {
+app.post("/api/game/create", function (req, res) {
   const response: string = apiCreateGame();
   logger.info("Created game with token " + response);
   res.status(201).send(response);
 });
 
-app.post("/api/game/start", function(req, res) {
+app.post("/api/game/start", function (req, res) {
   logger.info(req.body);
   logger.info("Attempting to start game with token " + req.body.token);
   const response: boolean = apiStartGame(req.body.token);
@@ -77,3 +78,5 @@ app.listen(2306, function () {
 export function getLogger(): Logger {
   return logger;
 }
+
+export default app;
