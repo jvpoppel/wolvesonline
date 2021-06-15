@@ -2,6 +2,8 @@ import {Logger} from "winston";
 import express = require("express");
 import {apiCreateGame} from "./api/APICreateGame";
 import {apiStartGame} from "./api/APIStartGame";
+import {apiJoinGame} from "./api/APIJoinGame";
+import {apiReconnectGame} from "./api/APIReconnectGame";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -47,8 +49,25 @@ app.post("/api/game/create", function (req, res) {
   res.status(201).send(response);
 });
 
+app.post("/api/game/join", function(req, res) {
+  const gameResponse = apiJoinGame(req.body.token);
+  if (gameResponse == undefined) {
+    res.status(400).send("Could not join game.");
+  } else {
+    res.status(201).send(gameResponse); // Return player token
+  }
+});
+
+app.post("/api/game/reconnect", function(req, res) {
+  const gameResponse = apiReconnectGame(req.body.playertoken, req.body.gametoken);
+  if (gameResponse == undefined) {
+    res.status(204).send("Could not reconnect game. Show homepage.");
+  } else {
+    res.status(201).send(gameResponse); // Return game token
+  }
+});
+
 app.post("/api/game/start", function (req, res) {
-  logger.info(JSON.stringify(req.body));
   logger.info("Attempting to start game with token " + req.body.token);
   const response: boolean = apiStartGame(req.body.token);
   if (!response) {
