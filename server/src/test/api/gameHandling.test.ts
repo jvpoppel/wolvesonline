@@ -1,4 +1,4 @@
-import app from "./../../endpoint";
+import app from "../../endpoint";
 import chai from "chai";
 import chaiHttp from "chai-http";
 import "mocha";
@@ -11,8 +11,8 @@ chai.use(chaiHttp);
 
 describe("Create and start game", () => {
   it("should return response on call", () => {
-
-    chai.request(app).post("/api/game/create")
+    const agent = chai.request.agent(app).keepOpen();
+    agent.post("/api/game/create")
       .then(createResponse => {
         chai.expect(createResponse).status(201);
 
@@ -24,13 +24,11 @@ describe("Create and start game", () => {
 
         chai.expect(GameManager.get().getByToken(gameToken).getState()).to.be.equal("OPEN_WAITFORPLAYERS");
 
-        chai.request(app).post("/api/game/start").field("token", token).then(startResponse => {
+        agent.post("/api/game/start").field("token", token).then(startResponse => {
           chai.expect(startResponse).status(202);
-
-
         });
 
         chai.expect(GameManager.get().getByToken(gameToken).getState()).to.be.equal("OPEN_INPROGRESS");
-      });
+      }).finally(() => agent.close());
   });
 });

@@ -5,7 +5,7 @@
   "main": "endpoint.js",
   "scripts": {
     "start": "node dist/endpoint.js",
-    "test": "test-server",
+    "test": "cross-env TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha -r ts-node/register src/**/*.test.ts",
     "tsc": "tsc"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
     "chai": "^4.3.4",
+    "cross-env": "^7.0.3",
     "eslint": "^7.28.0",
     "mocha": "^9.0.0",
     "ts-mocha": "^8.0.0",

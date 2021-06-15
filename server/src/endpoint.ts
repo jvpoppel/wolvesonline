@@ -6,7 +6,7 @@ import {apiStartGame} from "./api/APIStartGame";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
 
-const app: express.Application = express();
+const app = express();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
 
