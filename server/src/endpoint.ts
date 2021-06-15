@@ -48,7 +48,7 @@ app.post("/api/game/create", function (req, res) {
 });
 
 app.post("/api/game/start", function (req, res) {
-  logger.info(req.body);
+  logger.info(JSON.stringify(req.body));
   logger.info("Attempting to start game with token " + req.body.token);
   const response: boolean = apiStartGame(req.body.token);
   if (!response) {

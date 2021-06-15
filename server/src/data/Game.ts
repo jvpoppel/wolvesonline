@@ -1,6 +1,7 @@
 import { GameToken } from "../model/GameToken";
 import { TokenBuilder } from "./TokenBuilder";
 import { Token } from "../model/Token";
+import {Player} from "./Player";
 
 enum GameState {
   OPEN_WAITFORPLAYERS = "OPEN_WAITFORPLAYERS",
@@ -13,12 +14,35 @@ export class Game {
 
   private token: Token;
   private state: GameState;
-  private host: string;
+  private host: Player | undefined;
+  private players: Array<Player>;
 
   constructor() {
     this.state = GameState.OPEN_WAITFORPLAYERS;
     this.token = TokenBuilder.nullToken();
-    this.host = "";
+    this.host = undefined;
+    this.players = [];
+  }
+
+  public addPlayer(player: Player): boolean {
+    if (this.players.includes(player)) {
+      return false;
+    }
+    this.players.push(player);
+    return true;
+  }
+
+  public deletePlayer(player: Player): boolean {
+    const indexOfPlayer: number = this.players.indexOf(player);
+    if (indexOfPlayer < 0) {
+      return false;
+    }
+    this.players.splice(indexOfPlayer, 1);
+    return true;
+  }
+
+  public getHost(): Player | undefined {
+    return this.host;
   }
 
   public getToken(): GameToken {
@@ -29,7 +53,7 @@ export class Game {
     return !(this.state == GameState.OPEN_WAITFORPLAYERS);
   }
 
-  public setHost(host: string): Game {
+  public setHost(host: Player): Game {
     this.host = host;
     return this;
   }

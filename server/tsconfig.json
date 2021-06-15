@@ -61,5 +61,6 @@
   },
   "include": [
     "./src/**/*"
-  ]
+  ],
+  "types": ["node"]
 }
