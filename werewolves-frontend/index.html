@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Werewolves - Online</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <link href="styles/main.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h1>Werewolves - Online</h1>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <div class="container" id="container-home">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          Create, or join an existing game!
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 text-center">
+          <button type="button" id="createBtn" class="btn btn-info btn-sm" onclick="create();">Create game</button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 text-center">
+          <label for="joinGameToken">Join game with code</label> <input id="joinGameToken" type="text">
+          <button type="button" id="joinBtn" class="btn btn-info btn-sm" onclick="join();">Join game</button>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-12 text-center font-small">
+          <i><a href="http://www.jvpoppel.com" target="_blank">©Johan van Poppel 2021</a></i>
+        </div>
+      </div>
+      <!-- Modal Input Sound -->
+      <div id="soundModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Input Audio</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+              <input type="file" id="inputSound"/>
+              <audio id="sound" style="display: none" controls></audio>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="container-game" style="display: none">
+      <div class="row" id="role-info">
+        <div class="col-md-10 text-center"></div>
+        <div class="col-md-2 text-center">
+          <button id="showRoleInfo" onclick="showRoleInfo();">Info</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2>Game code: </h2><h2 id="gameCode"></h2>
+        </div>
+      </div>
+      <div class="row" id="row-host" style="display: none">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 text-center">
+          <table>
+            <tbody>
+            <tr><td><button id="werewolves">Werewolves</button></td></tr>
+            <tr><td><button id="ziener">Ziener</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+      <div class="row" id="row-vote" style="display: none">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <select id="voteList">
+            <option>a</option>
+            <option>b</option>
+          </select>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+
+    </div>
+    <!-- JQuery, Bootstrap and jshue libraries incl. dependencies -->
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+            crossorigin="anonymous"></script>
+
+    <!-- Own scripts -->
+    <script src="./bundle.js" type="text/javascript"></script>
+
+
+
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 text-center font-small">
+            <i><a href="https://github.com/jvpoppel/werewolves" target="_blank">Current build: 15-06-2021. Check my GitHub for
+              development builds!</a></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
