@@ -1,13 +1,13 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-    devtool: "source-map",
-    entry: {
-        main: './build-tsc/src/main.js'
-    },
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    mode: "development"
+  devtool: "source-map",
+  entry: {
+    main: "./build-tsc/Main.js"
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "./dist/werewolves-frontend/")
+  },
+  mode: "development"
 };

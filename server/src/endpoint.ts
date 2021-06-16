@@ -4,6 +4,7 @@ import {apiCreateGame} from "./api/APICreateGame";
 import {apiStartGame} from "./api/APIStartGame";
 import {apiJoinGame} from "./api/APIJoinGame";
 import {apiReconnectGame} from "./api/APIReconnectGame";
+import {TSMap} from "typescript-map";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -44,13 +45,13 @@ app.get("/", function (req, res) {
 
  */
 app.post("/api/game/create", function (req, res) {
-  const response: string = apiCreateGame();
-  logger.info("Created game with token " + response);
-  res.status(201).send(response);
+  const response: TSMap<string, string> = apiCreateGame();
+  res.status(201).send(JSON.stringify({"playerToken": response.get("playerToken"), "gameToken": response.get("gameToken")}));
 });
 
 app.post("/api/game/join", function(req, res) {
-  const gameResponse = apiJoinGame(req.body.token);
+  logger.info("Attempting to join game " + req.body.gameToken);
+  const gameResponse = apiJoinGame(req.body.gameToken);
   if (gameResponse == undefined) {
     res.status(400).send("Could not join game.");
   } else {
@@ -85,7 +86,7 @@ app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname + "/../../werewolves-frontend/dist/werewolves-frontend/index.html"));
 });
 
-app.listen(2306, function () {
+app.listen(2306, function () { // TODO: Port should be configurable
   logger.info("App is listening on port {0}!".replace("{0}", "2306"));
 });
 

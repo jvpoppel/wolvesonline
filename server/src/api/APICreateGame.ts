@@ -1,5 +1,6 @@
-import {GameManager} from "../manager/GameManager";
+import {Director} from "../manager/Director";
+import {TSMap} from "typescript-map";
 
-export function apiCreateGame(): string {
-  return GameManager.get().create().getToken().toString();
+export function apiCreateGame(): TSMap<string, string> {
+  return Director.get().createGameForPlayer();
 }

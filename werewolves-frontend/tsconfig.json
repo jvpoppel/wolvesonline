@@ -12,10 +12,5 @@
   },
   "include": [
     "./src"
-  ],
-  "exclude": [
-    "./src/logic/colors.js",
-    "./src/logic/jshue.js",
-    "./src/logic/oldmain.ts"
   ]
 }

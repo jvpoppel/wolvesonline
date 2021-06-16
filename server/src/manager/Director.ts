@@ -5,6 +5,7 @@ import { PlayerManager } from "./PlayerManager";
 import { GameToken } from "../model/GameToken";
 import {PlayerToken} from "../model/PlayerToken";
 import {TSMap} from "typescript-map";
+import {getLogger} from "../endpoint";
 
 export class Director {
 
@@ -24,25 +25,25 @@ export class Director {
   }
 
   /**
-   * Creates game and player, returns Stringified version
+   * Creates game and player, returns data object
    */
-  public createGameForPlayer(): string {
+  public createGameForPlayer(): TSMap<string, string> {
     const createdGame: Game = GameManager.get().create();
     const createdPlayer: Player = PlayerManager.get().create();
 
     this.playersInGame.set(createdGame.getToken(), new Set<PlayerToken>().add(createdPlayer.getToken()));
 
-    return JSON.stringify({
-      "game": createdGame.getToken().getToken(),
-      "player": createdPlayer.getToken().getToken()
-    });
+    return new TSMap<string, string>().set("playerToken", createdPlayer.getToken().getToken())
+      .set("gameToken", createdGame.getToken().getToken());
   }
 
   public joinGameForPlayer(gameToken: GameToken): string | undefined {
     const newPlayer: Player = PlayerManager.get().create();
     if (GameManager.get().getByToken(gameToken).addPlayer(newPlayer)) {
+      getLogger().info("Director: Added player " + newPlayer.getToken().getToken() + " to game " + gameToken.getToken());
       return JSON.stringify({"player": newPlayer.getToken().getToken()});
     }
+    getLogger().info("Director: Could not add player to game " + gameToken.getToken());
     return undefined;
   }
 

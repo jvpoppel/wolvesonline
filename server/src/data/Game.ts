@@ -50,7 +50,7 @@ export class Game {
   }
 
   public playerCanJoin(): boolean {
-    return !(this.state == GameState.OPEN_WAITFORPLAYERS);
+    return this.state == GameState.OPEN_WAITFORPLAYERS;
   }
 
   public setHost(host: Player): Game {
