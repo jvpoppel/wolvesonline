@@ -31,6 +31,9 @@ export class Director {
     const createdGame: Game = GameManager.get().create();
     const createdPlayer: Player = PlayerManager.get().create();
 
+    getLogger().debug("[Director] Created game " + createdGame.getToken().getToken()
+      + " for player " + createdPlayer.getToken().getToken());
+
     this.playersInGame.set(createdGame.getToken(), new Set<PlayerToken>().add(createdPlayer.getToken()));
 
     return new TSMap<string, string>().set("playerToken", createdPlayer.getToken().getToken())
@@ -40,10 +43,10 @@ export class Director {
   public joinGameForPlayer(gameToken: GameToken): string | undefined {
     const newPlayer: Player = PlayerManager.get().create();
     if (GameManager.get().getByToken(gameToken).addPlayer(newPlayer)) {
-      getLogger().info("Director: Added player " + newPlayer.getToken().getToken() + " to game " + gameToken.getToken());
+      getLogger().debug("[Director] Added player " + newPlayer.getToken().getToken() + " to game " + gameToken.getToken());
       return JSON.stringify({"player": newPlayer.getToken().getToken()});
     }
-    getLogger().info("Director: Could not add player to game " + gameToken.getToken());
+    getLogger().debug("[Director] Could not add player to game " + gameToken.getToken());
     return undefined;
   }
 
@@ -56,10 +59,12 @@ export class Director {
    */
   public checkIfPlayerInGame(playerToken: PlayerToken, gameToken: GameToken): GameToken | undefined {
     if (!this.playersInGame.has(gameToken)) {
+      getLogger().info("Director does not have game " + gameToken.getToken());
       return undefined;
     }
     const players: Set<PlayerToken> = this.playersInGame.get(gameToken);
     if (!players.has(playerToken)) {
+      getLogger().info("Director does not have player " + playerToken.getToken() + " in game " + gameToken.getToken());
       return undefined;
     }
 

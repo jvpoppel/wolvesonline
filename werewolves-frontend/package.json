@@ -5,11 +5,12 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "copy-index": "shx cp ./index.html ./dist/werewolves-frontend",
     "clean": "npm run clean-build-steps && rm -rf dist",
-    "tsc": "./node_modules/.bin/tsc",
+    "tsc": "tsc",
     "webpack": "webpack",
     "clean-build-steps": "rm -rf build-tsc",
-    "build": "npm run clean && npm run tsc && npm run webpack && npm run clean-build-steps"
+    "build": "npm run clean && npm run tsc && npm run webpack && npm run clean-build-steps && npm run copy-index"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.0.16",
+    "shx": "^0.3.3",
     "webpack-cli": "^4.7.2"
   }
 }

@@ -12,4 +12,16 @@ export class NullToken implements Token {
   getToken(): string {
     return "";
   }
+
+  isGameToken(): boolean {
+    return this.type == TokenType.GAME;
+  }
+
+  isNullToken(): boolean {
+    return this.type == TokenType.NULL;
+  }
+
+  isPlayerToken(): boolean {
+    return this.type == TokenType.PLAYER;
+  }
 }

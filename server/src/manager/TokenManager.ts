@@ -4,6 +4,7 @@ import {GameToken} from "../model/GameToken";
 import {PlayerToken} from "../model/PlayerToken";
 import {TokenBuilder} from "../data/TokenBuilder";
 import {Token} from "../model/Token";
+import {NullToken} from "../model/NullToken";
 
 export class TokenManager {
 

@@ -1,5 +1,8 @@
 export class WebElements {
 
+  /* Loading */
+  public static LOADING_PAGE(): HTMLElement { return document.getElementById("container-loading");}
+
   /* Home page */
   public static HOME_PAGE(): HTMLElement { return document.getElementById("container-home");}
   public static CREATE_GAME(): HTMLElement { return document.getElementById("createBtn");}

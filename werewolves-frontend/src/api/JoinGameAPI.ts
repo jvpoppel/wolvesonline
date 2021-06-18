@@ -12,7 +12,7 @@ export class JoinGameAPI {
     }
     this.sending = true;
 
-    await new BaseApi().post<{player: string}>("http://localhost:2306/api/game/join", {"gameToken": gameToken})
+    await new BaseApi().post<{player: string}>("http://51.75.76.150:80/api/game/join", {"gameToken": gameToken})
       .then(({player}) => {
         LocalStorage.setPlayerToken(player);
         LocalStorage.setGameToken(gameToken);

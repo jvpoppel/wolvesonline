@@ -14,7 +14,7 @@ const app = express();
 const path = require("path");
 
 const logger = winston.createLogger({
-  level: "info",
+  level: "debug",
   format: winston.format.json(),
   defaultMeta: {service: "user-service"},
   transports: [
@@ -45,36 +45,38 @@ app.get("/", function (req, res) {
 
  */
 app.post("/api/game/create", function (req, res) {
+  logger.info("[EXPRESS] Creating new game");
   const response: TSMap<string, string> = apiCreateGame();
   res.status(201).send(JSON.stringify({"playerToken": response.get("playerToken"), "gameToken": response.get("gameToken")}));
 });
 
 app.post("/api/game/join", function(req, res) {
-  logger.info("Attempting to join game " + req.body.gameToken);
+  logger.info("[EXPRESS] Attempting to join game " + req.body.gameToken);
   const gameResponse = apiJoinGame(req.body.gameToken);
   if (gameResponse == undefined) {
     res.status(400).send("Could not join game.");
   } else {
-    res.status(201).send(gameResponse); // Return player token
+    res.status(200).send(gameResponse); // Return player token
   }
 });
 
 app.post("/api/game/reconnect", function(req, res) {
-  const gameResponse = apiReconnectGame(req.body.playertoken, req.body.gametoken);
+  logger.info("[EXPRESS] Player " + req.body.playerToken + " is attempting to rejoin game " + req.body.gameToken);
+  const gameResponse = apiReconnectGame(req.body.playerToken, req.body.gameToken);
   if (gameResponse == undefined) {
-    res.status(204).send("Could not reconnect game. Show homepage.");
+    res.status(200).send(JSON.stringify({"connected": "failed"}));
   } else {
-    res.status(201).send(gameResponse); // Return game token
+    res.status(200).send(JSON.stringify({"connected": "success"})); // Return game token
   }
 });
 
 app.post("/api/game/start", function (req, res) {
-  logger.info("Attempting to start game with token " + req.body.token);
+  logger.info("[EXPRESS] Attempting to start game with token " + req.body.token);
   const response: boolean = apiStartGame(req.body.token);
   if (!response) {
-    res.status(400).send("Game could not be started. Is given token correct or has it already been started?");
+    res.status(400).send(JSON.stringify({"started": "failed"})); // Game could not be started. Is given token correct or has it already been started?
   } else {
-    res.status(202).send("Success");
+    res.status(202).send(JSON.stringify({"started": "success"}));
   }
 });
 /*
@@ -86,7 +88,7 @@ app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname + "/../../werewolves-frontend/dist/werewolves-frontend/index.html"));
 });
 
-app.listen(2306, function () { // TODO: Port should be configurable
+app.listen(80, function () { // TODO: Port should be configurable
   logger.info("App is listening on port {0}!".replace("{0}", "2306"));
 });
 

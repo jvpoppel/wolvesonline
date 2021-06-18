@@ -17,4 +17,8 @@ export class LocalStorage {
   public static setPlayerToken(playerToken: string): void {
     localStorage.setItem("playerToken", playerToken);
   }
+
+  public static clear(): void {
+    localStorage.clear();
+  }
 }

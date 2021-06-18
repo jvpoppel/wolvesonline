@@ -17,4 +17,16 @@ export class PlayerToken implements Token {
     return this.token;
   }
 
+  isGameToken(): boolean {
+    return this.type == TokenType.GAME;
+  }
+
+  isNullToken(): boolean {
+    return this.type == TokenType.NULL;
+  }
+
+  isPlayerToken(): boolean {
+    return this.type == TokenType.PLAYER;
+  }
+
 }

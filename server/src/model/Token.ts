@@ -5,6 +5,10 @@ export interface Token {
   getToken(): string;
 
   toString(): string;
+
+  isGameToken(): boolean;
+  isPlayerToken(): boolean;
+  isNullToken(): boolean;
 }
 
 export enum TokenType {
