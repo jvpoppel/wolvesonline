@@ -1,23 +1,28 @@
 import {LocalStorage} from "../data/LocalStorage";
 import {DisplayManager} from "../elem/DisplayManager";
 import {BaseApi} from "./BaseApi";
+import {Config} from "../Config";
+import {TSMap} from "typescript-map";
 
 export class JoinGameAPI {
 
   private static sending: boolean;
 
-  public static async send(gameToken: string): Promise<void> {
+  public static async send(gameToken: string, playerName: string): Promise<TSMap<string, string>> {
     if (this.sending) {
       return;
     }
     this.sending = true;
 
-    await new BaseApi().post<{player: string}>("http://51.75.76.150:80/api/game/join", {"gameToken": gameToken})
+    return await new BaseApi().post<{player: string}>("{0}:{1}/api/game/join".replace("{0}", Config.serverURL)
+      .replace("{1}", Config.port), {"gameToken": gameToken, "playerName": playerName})
       .then(({player}) => {
         LocalStorage.setPlayerToken(player);
         LocalStorage.setGameToken(gameToken);
         DisplayManager.HomePageToGame();
         DisplayManager.UpdateGameCode(gameToken);
-      }).finally(() => { this.sending = false; });
+        this.sending = false;
+        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", player);
+      });
   }
 }

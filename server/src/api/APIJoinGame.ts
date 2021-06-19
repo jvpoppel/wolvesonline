@@ -5,7 +5,7 @@ import {GameManager} from "../manager/GameManager";
 import {Director} from "../manager/Director";
 import {getLogger} from "../endpoint";
 
-export function apiJoinGame(gameToken: string): string | undefined {
+export function apiJoinGame(gameToken: string, playerName: string): string | undefined {
 
   const resolvedGameToken: Token = TokenManager.get().getFromString(gameToken);
   if (!(resolvedGameToken instanceof GameToken)) {
@@ -18,5 +18,5 @@ export function apiJoinGame(gameToken: string): string | undefined {
     return undefined; // Game already started
   }
 
-  return Director.get().joinGameForPlayer(resolvedGameToken);
+  return Director.get().joinGameForPlayer(resolvedGameToken, playerName);
 }

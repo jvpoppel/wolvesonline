@@ -1,18 +1,21 @@
 import {DisplayManager} from "../elem/DisplayManager";
 import {BaseApi} from "./BaseApi";
 import {LocalStorage} from "../data/LocalStorage";
+import {Config} from "../Config";
+import {TSMap} from "typescript-map";
 
 export class ReconnectGameAPI {
 
   private static sending: boolean;
 
-  public static async send(gameToken: string, playerToken: string): Promise<void> {
+  public static async send(gameToken: string, playerToken: string): Promise<TSMap<string, string>> {
     if (this.sending) {
       return;
     }
     this.sending = true;
 
-    await new BaseApi().post<{connected: string}>("http://51.75.76.150:80/api/game/reconnect", {"gameToken": gameToken, "playerToken": playerToken})
+    return await new BaseApi().post<{connected: string}>("{0}:{1}/api/game/reconnect".replace("{0}", Config.serverURL)
+      .replace("{1}", Config.port), {"gameToken": gameToken, "playerToken": playerToken})
       .then(({connected}) => {
         if (connected.valueOf() === "success") {
           DisplayManager.LoadingToGame();
@@ -21,6 +24,8 @@ export class ReconnectGameAPI {
           LocalStorage.clear();
           DisplayManager.LoadingToHome();
         }
-      }).finally(() => { this.sending = false; });
+        this.sending = false;
+        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", playerToken).set("connected", connected);
+      });
   }
 }

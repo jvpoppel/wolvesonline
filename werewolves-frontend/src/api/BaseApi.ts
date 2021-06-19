@@ -19,4 +19,11 @@ export class BaseApi {
       });
 
   }
+
+  public get<T>(url: string): Promise<T> {
+    return fetch(url, {method: "GET"})
+      .then(response => {
+        return response.json();
+      });
+  }
 }

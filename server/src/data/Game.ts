@@ -14,35 +14,45 @@ export class Game {
 
   private token: Token;
   private state: GameState;
+  private iteration: number;
   private host: Player | undefined;
   private players: Array<Player>;
 
   constructor() {
     this.state = GameState.OPEN_WAITFORPLAYERS;
     this.token = TokenBuilder.nullToken();
+    this.iteration = 0;
     this.host = undefined;
     this.players = [];
   }
 
+  /* Below method should only be called from Director */
   public addPlayer(player: Player): boolean {
     if (this.players.includes(player)) {
       return false;
     }
     this.players.push(player);
+    this.iteration ++;
     return true;
   }
 
+  /* Below method should only be called from Director */
   public deletePlayer(player: Player): boolean {
     const indexOfPlayer: number = this.players.indexOf(player);
     if (indexOfPlayer < 0) {
       return false;
     }
     this.players.splice(indexOfPlayer, 1);
+    this.iteration ++;
     return true;
   }
 
   public getHost(): Player | undefined {
     return this.host;
+  }
+
+  public getIteration(): number {
+    return this.iteration;
   }
 
   public getToken(): GameToken {
@@ -55,6 +65,7 @@ export class Game {
 
   public setHost(host: Player): Game {
     this.host = host;
+    this.iteration ++;
     return this;
   }
 

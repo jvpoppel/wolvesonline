@@ -8,6 +8,7 @@ export class WebElements {
   public static CREATE_GAME(): HTMLElement { return document.getElementById("createBtn");}
   public static JOIN_TOKEN(): HTMLElement { return document.getElementById("joinGameToken");}
   public static JOIN_BUTTON(): HTMLElement { return document.getElementById("joinBtn");}
+  public static PLAYER_NAME(): HTMLElement { return document.getElementById("playerName");}
 
   /* Game page */
   public static GAME_PAGE(): HTMLElement { return document.getElementById("container-game");}

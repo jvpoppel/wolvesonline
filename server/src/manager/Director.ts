@@ -27,9 +27,10 @@ export class Director {
   /**
    * Creates game and player, returns data object
    */
-  public createGameForPlayer(): TSMap<string, string> {
+  public createGameForPlayer(playerName: string): TSMap<string, string> {
     const createdGame: Game = GameManager.get().create();
     const createdPlayer: Player = PlayerManager.get().create();
+    createdPlayer.setName(playerName);
 
     getLogger().debug("[Director] Created game " + createdGame.getToken().getToken()
       + " for player " + createdPlayer.getToken().getToken());
@@ -40,9 +41,11 @@ export class Director {
       .set("gameToken", createdGame.getToken().getToken());
   }
 
-  public joinGameForPlayer(gameToken: GameToken): string | undefined {
+  public joinGameForPlayer(gameToken: GameToken, playerName: string): string | undefined {
     const newPlayer: Player = PlayerManager.get().create();
+    newPlayer.setName(playerName);
     if (GameManager.get().getByToken(gameToken).addPlayer(newPlayer)) {
+      this.playersInGame.get(gameToken).add(newPlayer.getToken());
       getLogger().debug("[Director] Added player " + newPlayer.getToken().getToken() + " to game " + gameToken.getToken());
       return JSON.stringify({"player": newPlayer.getToken().getToken()});
     }
