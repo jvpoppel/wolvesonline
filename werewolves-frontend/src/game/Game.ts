@@ -1,4 +1,6 @@
 import {CheckGameIterationAPI} from "../api/CheckGameIterationAPI";
+import {GetGameDataAPI} from "../api/GetGameDataAPI";
+import {GameData} from "../model/GameData";
 
 export class Game {
 
@@ -27,9 +29,16 @@ export class Game {
   private async loop() {
     while (this.run) {
       await this.sleep(1000);
-      const serverIteration = await CheckGameIterationAPI.send(this.gameToken, this.playerToken);
+      const serverIteration = await new Promise<number>(resolve => resolve(CheckGameIterationAPI.send(this.gameToken, this.playerToken).then(result => {
+        return result;
+      })));
+
       if (serverIteration != this.iteration) {
-        console.log("Out of sync");
+        console.debug(Date.now() + ": Client out of sync with server. Fetching server data...");
+        const newGameData: GameData = await new Promise<GameData>(resolve => resolve(GetGameDataAPI.send(this.playerToken, this.gameToken, this.iteration)
+          .then(response => {
+            return response;})));
+        this.iteration = newGameData.iteration;
       }
     }
   }

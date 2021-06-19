@@ -10,6 +10,7 @@ export class JoinGameAPI {
 
   public static async send(gameToken: string, playerName: string): Promise<TSMap<string, string>> {
     if (this.sending) {
+      console.warn("JoinGameAPI: Asked for new request but previous request is still sending!");
       return;
     }
     this.sending = true;

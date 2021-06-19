@@ -7,6 +7,7 @@ import {apiReconnectGame} from "./api/APIReconnectGame";
 import { Config } from "./Config";
 import {TSMap} from "typescript-map";
 import {apiGetGameIteration} from "./api/APIGetGameIteration";
+import {apiGetGameData} from "./api/APIGetGameData";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -49,12 +50,18 @@ app.get("/", function (req, res) {
             START API ROUTING
 
  */
+/*
+  Create game, return created playerToken and gameToken
+ */
 app.post("/api/game/create", function (req, res) {
   logger.info("[EXPRESS] Creating new game");
   const response: TSMap<string, string> = apiCreateGame(req.body.playerName);
   res.status(201).send(JSON.stringify({"playerToken": response.get("playerToken"), "gameToken": response.get("gameToken")}));
 });
 
+/*
+  Join game for player, return joined gameToken and created playerToken
+ */
 app.post("/api/game/join", function(req, res) {
   logger.info("[EXPRESS] Attempting to join game " + req.body.gameToken);
   const gameResponse = apiJoinGame(req.body.gameToken, req.body.playerName);
@@ -65,6 +72,9 @@ app.post("/api/game/join", function(req, res) {
   }
 });
 
+/*
+  Reconnect to game with given gameToken and playerToken, "success" if succeeded, "failed" otherwise.
+ */
 app.post("/api/game/reconnect", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.playerToken + " is attempting to rejoin game " + req.body.gameToken);
   const gameResponse = apiReconnectGame(req.body.playerToken, req.body.gameToken);
@@ -75,6 +85,9 @@ app.post("/api/game/reconnect", function(req, res) {
   }
 });
 
+/*
+  Start game with given gameToken
+ */
 app.post("/api/game/start", function (req, res) {
   logger.info("[EXPRESS] Attempting to start game with token " + req.body.token);
   const response: boolean = apiStartGame(req.body.token);
@@ -85,12 +98,32 @@ app.post("/api/game/start", function (req, res) {
   }
 });
 
-app.get("/api/game/:gametoken/:playertoken", function(req, res) {
+/*
+  GET iteration of given gameToken. Playertoken also sent to check if player actually is in game
+ */
+app.get("/api/game/:gametoken/:playertoken/iteration", function(req, res) {
   const response: string = apiGetGameIteration(req.params.gametoken, req.params.playertoken);
   if (response === "-1") {
     res.status(400).send(JSON.stringify({"iteration": response}));
   } else {
     res.status(200).send(JSON.stringify({"iteration": response}));
+  }
+});
+
+/*
+  POST get Game Data, given a gametoken, playertoken and client-iteration, return:
+  status 304 iff clientIteration = serverIteration
+  status 400 iff gameToken or playerToken incorrect
+  status 200 with gameData in json format
+ */
+app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
+  const response: string = apiGetGameData(req.params.gametoken, req.params.playertoken, req.body.iteration);
+  if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else if (response === "notChanged") {
+    res.status(304);
+  } else {
+    res.status(200).send(response);
   }
 });
 /*

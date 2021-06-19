@@ -36,7 +36,6 @@ export class Main {
   public async performCreateGameApi(): Promise<void> {
     const playerName: string = (<HTMLInputElement> WebElements.PLAYER_NAME()).value;
     await CreateGameAPI.send(playerName).then(response => {
-      console.log(response);
       this.currentGame = new Game(response.get("gameToken"), response.get("playerToken")).start();
     });
   }
@@ -48,7 +47,6 @@ export class Main {
     const gameToken: string = (<HTMLInputElement> WebElements.JOIN_TOKEN()).value;
     const playerName: string = (<HTMLInputElement> WebElements.PLAYER_NAME()).value;
     await JoinGameAPI.send(gameToken, playerName).then(response => {
-      console.log(response);
       this.currentGame = new Game(response.get("gameToken"), response.get("playerToken")).start();
     });
   }
@@ -58,7 +56,6 @@ export class Main {
    */
   public async reconnectGameApi(gameToken: string, playerToken: string): Promise<void> {
     await ReconnectGameAPI.send(gameToken, playerToken).then(response => {
-      console.log(response);
       if (response.get("connected") === "success") {
         this.currentGame = new Game(response.get("gameToken"), response.get("playerToken")).start();
       }

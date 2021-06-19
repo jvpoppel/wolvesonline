@@ -73,4 +73,13 @@ export class Director {
 
     return gameToken;
   }
+
+  public getPlayersInGame(gameToken: GameToken): Set<PlayerToken> | undefined {
+    if (!this.playersInGame.has(gameToken)) {
+      getLogger().info("Director does not have game " + gameToken.getToken());
+      return undefined;
+    }
+
+    return this.playersInGame.get(gameToken);
+  }
 }

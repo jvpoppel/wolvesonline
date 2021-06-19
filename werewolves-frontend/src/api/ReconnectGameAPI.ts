@@ -10,6 +10,7 @@ export class ReconnectGameAPI {
 
   public static async send(gameToken: string, playerToken: string): Promise<TSMap<string, string>> {
     if (this.sending) {
+      console.warn("ReconnectGameAPI: Asked for new request but previous request is still sending!");
       return;
     }
     this.sending = true;
