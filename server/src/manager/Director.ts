@@ -24,6 +24,19 @@ export class Director {
     return Director.instance;
   }
 
+  private isPlayerInGame(playerToken: PlayerToken, gameToken: GameToken): boolean {
+    if (!this.playersInGame.has(gameToken)) {
+      getLogger().info("Director does not have game " + gameToken.getToken());
+      return false;
+    }
+    const players: Set<PlayerToken> = this.playersInGame.get(gameToken);
+    if (!players.has(playerToken)) {
+      getLogger().info("Director does not have player " + playerToken.getToken() + " in game " + gameToken.getToken());
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Creates game and player, returns data object
    */
@@ -62,13 +75,7 @@ export class Director {
    * @param gameToken Game token from local storage
    */
   public checkIfPlayerInGame(playerToken: PlayerToken, gameToken: GameToken): GameToken | undefined {
-    if (!this.playersInGame.has(gameToken)) {
-      getLogger().info("Director does not have game " + gameToken.getToken());
-      return undefined;
-    }
-    const players: Set<PlayerToken> = this.playersInGame.get(gameToken);
-    if (!players.has(playerToken)) {
-      getLogger().info("Director does not have player " + playerToken.getToken() + " in game " + gameToken.getToken());
+    if (!this.isPlayerInGame(playerToken, gameToken)) {
       return undefined;
     }
 
@@ -82,5 +89,19 @@ export class Director {
     }
 
     return this.playersInGame.get(gameToken);
+  }
+
+  public kickPlayerFromGame(playerToken: PlayerToken, gameToken: GameToken): boolean | undefined {
+    getLogger().debug("[Director] Attempting to kick player " + playerToken.getToken() + " from game " + gameToken.getToken());
+    if (!this.isPlayerInGame(playerToken, gameToken)) {
+      getLogger().debug("[Director] Could not kick player " + playerToken.getToken() + " from game " + gameToken.getToken() + ": Player not in game.");
+      return undefined;
+    }
+
+    // Player is in game, remove from PlayerManager & PlayersInGame
+    GameManager.get().getByToken(gameToken).deletePlayer(PlayerManager.get().getByToken(playerToken));
+    PlayerManager.get().deleteByToken(playerToken);
+    this.playersInGame.get(gameToken).delete(playerToken);
+    return true;
   }
 }

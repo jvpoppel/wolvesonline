@@ -5,7 +5,6 @@ import {LocalStorage} from "./data/LocalStorage";
 import {ReconnectGameAPI} from "./api/ReconnectGameAPI";
 import {DisplayManager} from "./elem/DisplayManager";
 import {Game} from "./game/Game";
-import {TSMap} from "typescript-map";
 
 $(() => {
   new Main();

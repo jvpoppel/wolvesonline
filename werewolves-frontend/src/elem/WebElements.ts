@@ -18,6 +18,7 @@ export class WebElements {
   public static PLAYER_LIST_PLAYER(): HTMLElement { return document.getElementById("playerListForPlayers");}
   public static PLAYER_LIST_BODY_HOST(): HTMLElement { return document.getElementById("player-list-body-host");}
   public static PLAYER_LIST_BODY_PLAYER(): HTMLElement { return document.getElementById("player-list-body-player");}
+  public static KICK_PLAYER(playerToken: string): HTMLElement { return document.getElementById(playerToken + "-kick");}
 
   /* NARRATOR CONTROLS */
   public static HOST_ROW(): HTMLElement { return document.getElementById("row-host");}

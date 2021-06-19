@@ -31,6 +31,13 @@ export class DisplayManager {
     WebElements.GAME_CODE().innerText = code;
   }
 
+  public static GameToHomePage(): void {
+    WebElements.HOME_PAGE().style.display = "";
+    WebElements.GAME_PAGE().style.display = "none";
+    WebElements.PLAYER_LIST_BODY_HOST().innerHTML = "";
+    WebElements.PLAYER_LIST_BODY_PLAYER().innerHTML = "";
+  }
+
   public static PlayerIsHost(): void {
     console.log("Todo: Rework host row to contain start button");
     //WebElements.HOST_ROW().style.display = "";

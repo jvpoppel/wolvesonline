@@ -2,6 +2,8 @@ import {CheckGameIterationAPI} from "../api/CheckGameIterationAPI";
 import {GetGameDataAPI} from "../api/GetGameDataAPI";
 import {GameData} from "../model/GameData";
 import {UpdateWithGameData} from "../elem/UpdateWithGameData";
+import {DisplayManager} from "../elem/DisplayManager";
+import {LocalStorage} from "../data/LocalStorage";
 
 export class Game {
 
@@ -34,7 +36,12 @@ export class Game {
         return result;
       })));
 
-      if (serverIteration != this.iteration) {
+      /* Player not in game anymore (kicked?), stop loop, go back to homepage. */
+      if (serverIteration == -1) {
+        LocalStorage.clear();
+        DisplayManager.GameToHomePage();
+        this.run = false;
+      } else if (serverIteration != this.iteration) {
         console.debug(Date.now() + ": Client out of sync with server. Fetching server data...");
         const newGameData: GameData = await new Promise<GameData>(resolve => resolve(GetGameDataAPI.send(this.playerToken, this.gameToken, this.iteration)
           .then(response => {

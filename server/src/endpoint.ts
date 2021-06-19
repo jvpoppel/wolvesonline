@@ -8,6 +8,7 @@ import { Config } from "./Config";
 import {TSMap} from "typescript-map";
 import {apiGetGameIteration} from "./api/APIGetGameIteration";
 import {apiGetGameData} from "./api/APIGetGameData";
+import {apiKickPlayer} from "./api/APIKickPlayer";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -124,6 +125,24 @@ app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
     res.status(304);
   } else {
     res.status(200).json(response);
+  }
+});
+
+/*
+  POST kick Player from Game.
+  status 401 iff supposedHost != host of given game
+  status 400 iff playerToken or gameToken not valid, or if player not in game.
+  status 200 iff player has been kicked from the game.
+ */
+app.post("/api/game/:gametoken/:playertoken/kick", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.body.host + " attempts to kick " + req.params.playertoken + " from game " + req.params.gametoken);
+  const response: string = apiKickPlayer(req.params.playertoken, req.body.host, req.params.gametoken);
+  if (response === "unauthorized") {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
   }
 });
 /*
