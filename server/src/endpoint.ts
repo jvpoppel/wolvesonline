@@ -117,13 +117,13 @@ app.get("/api/game/:gametoken/:playertoken/iteration", function(req, res) {
   status 200 with gameData in json format
  */
 app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
-  const response: string = apiGetGameData(req.params.gametoken, req.params.playertoken, req.body.iteration);
+  const response: any = apiGetGameData(req.params.gametoken, req.params.playertoken, req.body.iteration);
   if (response === "failed") {
     res.status(400).send(JSON.stringify({"status": "failed"}));
   } else if (response === "notChanged") {
     res.status(304);
   } else {
-    res.status(200).send(response);
+    res.status(200).json(response);
   }
 });
 /*

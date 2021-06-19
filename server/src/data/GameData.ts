@@ -5,12 +5,11 @@ import {GameManager} from "../manager/GameManager";
 import {PlayerManager} from "../manager/PlayerManager";
 import {Player} from "./Player";
 import {Director} from "../manager/Director";
-import {TSMap} from "typescript-map";
 
 export class GameData {
 
   /**
-   * Method that converts a given game into a stringified JSON representation.
+   * Method that converts a given game into a object representation.
    * Basically gives the frontend all data it needs for a certain player.
    * i.e. when a player has role Wolf, only they have to receive wolf-specific data. A player with role
    * Ziener does not need this, and should not be able to receive any data about the Wolf event
@@ -21,7 +20,7 @@ export class GameData {
    * @param playerToken Player calling the conversion
    * @returns "failed" iff game and/or playertokens are not valid. Else, stringified version of game data.
    */
-  public static convert(gameToken: GameToken, playerToken: PlayerToken): string {
+  public static convert(gameToken: GameToken, playerToken: PlayerToken): any {
     const game: Game = GameManager.get().getByToken(gameToken);
     const player: Player = PlayerManager.get().getByToken(playerToken);
     const playersInGame: Set<PlayerToken> | undefined = Director.get().getPlayersInGame(gameToken);
@@ -37,18 +36,15 @@ export class GameData {
     const playerNamesInGame: string[] = playersInGameLST.map(playerToken => PlayerManager.get().getByToken(playerToken).getName());
     const playerTokensInGame: string[] = playersInGameLST.map(playerToken => playerToken.getToken());
 
-
-
-    const data = new TSMap<string, string>()
-      .set("status", "success")
-      .set("gameToken", game.getToken().getToken())
-      .set("playerToken", player.getToken().getToken())
-      .set("host", game.getHost())
-      .set("iteration", game.getIteration()+"")
-      .set("started", String(!game.playerCanJoin()))
-      .set("playerTokens", JSON.stringify(playerTokensInGame))
-      .set("playerNames", JSON.stringify(playerNamesInGame));
-
-    return JSON.stringify(data);
+    return {
+      "status": "success",
+      "gameToken": game.getToken().getToken(),
+      "playerToken": player.getToken().getToken(),
+      "host": game.getHost(),
+      "iteration": game.getIteration(),
+      "started": !game.playerCanJoin(),
+      "playerTokens": playerTokensInGame,
+      "playerNames": playerNamesInGame
+    };
   }
 }
