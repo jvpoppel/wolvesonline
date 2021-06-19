@@ -47,8 +47,12 @@ export class Game {
     return true;
   }
 
-  public getHost(): Player | undefined {
-    return this.host;
+  public getHost(): string {
+    if (this.host === undefined) {
+      return "";
+    } else {
+      return this.host.getToken().getToken();
+    }
   }
 
   public getIteration(): number {

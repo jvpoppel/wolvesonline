@@ -14,8 +14,12 @@ export class WebElements {
   public static GAME_PAGE(): HTMLElement { return document.getElementById("container-game");}
   public static ROLE_INFO_BUTTON(): HTMLElement { return document.getElementById("showRoleInfo");}
   public static GAME_CODE(): HTMLElement { return document.getElementById("gameCode");}
+  public static PLAYER_LIST_HOST(): HTMLElement { return document.getElementById("playerListForHost");}
+  public static PLAYER_LIST_PLAYER(): HTMLElement { return document.getElementById("playerListForPlayers");}
+  public static PLAYER_LIST_BODY_HOST(): HTMLElement { return document.getElementById("player-list-body-host");}
+  public static PLAYER_LIST_BODY_PLAYER(): HTMLElement { return document.getElementById("player-list-body-player");}
 
-  /* HOST CONTROLS */
+  /* NARRATOR CONTROLS */
   public static HOST_ROW(): HTMLElement { return document.getElementById("row-host");}
   public static WEREWOLVES_BTN(): HTMLElement { return document.getElementById("werewolves");}
   public static ZIENER_BTN(): HTMLElement { return document.getElementById("ziener");}

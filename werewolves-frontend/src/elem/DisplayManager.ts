@@ -7,6 +7,16 @@ export class DisplayManager {
     WebElements.HOME_PAGE().style.display = "";
   }
 
+  public static ShowCorrectPlayerList(forHost: boolean): void {
+    if (forHost) {
+      WebElements.PLAYER_LIST_HOST().style.display = "";
+      WebElements.PLAYER_LIST_PLAYER().style.display = "none";
+    } else {
+      WebElements.PLAYER_LIST_HOST().style.display = "none";
+      WebElements.PLAYER_LIST_PLAYER().style.display = "";
+    }
+  }
+
   public static LoadingToGame(): void {
     WebElements.LOADING_PAGE().style.display = "none";
     WebElements.GAME_PAGE().style.display = "";
@@ -22,6 +32,7 @@ export class DisplayManager {
   }
 
   public static PlayerIsHost(): void {
-    WebElements.HOST_ROW().style.display = "";
+    console.log("Todo: Rework host row to contain start button");
+    //WebElements.HOST_ROW().style.display = "";
   }
 }

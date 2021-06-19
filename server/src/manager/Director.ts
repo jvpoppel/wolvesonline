@@ -31,6 +31,7 @@ export class Director {
     const createdGame: Game = GameManager.get().create();
     const createdPlayer: Player = PlayerManager.get().create();
     createdPlayer.setName(playerName);
+    createdGame.setHost(createdPlayer);
 
     getLogger().debug("[Director] Created game " + createdGame.getToken().getToken()
       + " for player " + createdPlayer.getToken().getToken());

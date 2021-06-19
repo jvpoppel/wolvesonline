@@ -43,8 +43,9 @@ export class GameData {
       .set("status", "success")
       .set("gameToken", game.getToken().getToken())
       .set("playerToken", player.getToken().getToken())
+      .set("host", game.getHost())
       .set("iteration", game.getIteration()+"")
-      .set("gameState", game.getState())
+      .set("started", String(!game.playerCanJoin()))
       .set("playerTokens", JSON.stringify(playerTokensInGame))
       .set("playerNames", JSON.stringify(playerNamesInGame));
 

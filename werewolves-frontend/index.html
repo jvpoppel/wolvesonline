@@ -93,7 +93,36 @@
               <h2 id="gameCode"></h2>
             </div>
           </div>
-          <div class="row" id="row-host" style="display: none">
+          <hr>
+          <div class="row" id="row-player-list">
+            <table id="playerListForHost" style="display: none">
+              <thead>
+                <tr>
+                  <th>
+                    Name
+                  </th>
+                  <th>
+                    Narrator?
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="player-list-body-host">
+              </tbody>
+            </table>
+            <table id="playerListForPlayers">
+              <thead>
+              <tr>
+                <th>
+                  Name
+                </th>
+              </tr>
+              </thead>
+              <tbody id="player-list-body-player">
+              </tbody>
+            </table>
+          </div>
+          <hr>
+          <div class="row" id="row-night-role-selection" style="display: none">
             <div class="col-md-1"></div>
             <div class="col-md-10 text-center">
               <table>
@@ -133,7 +162,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 text-center font-small">
-                <i><a href="https://github.com/jvpoppel/werewolves" target="_blank">Current build: 15-06-2021. Check my
+                <i><a href="https://github.com/jvpoppel/werewolves" target="_blank">Check my
                   GitHub for
                   development builds!</a></i>
               </div>

@@ -2,8 +2,9 @@ export interface GameData {
   status: string,
   gameToken?: string,
   playerToken?: string,
+  host?: string,
   iteration?: number,
-  gameState?: string,
+  started?: boolean,
   playerTokens?: string[],
   playerNames?: string[]
 }

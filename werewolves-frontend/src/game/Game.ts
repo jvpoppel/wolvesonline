@@ -1,6 +1,7 @@
 import {CheckGameIterationAPI} from "../api/CheckGameIterationAPI";
 import {GetGameDataAPI} from "../api/GetGameDataAPI";
 import {GameData} from "../model/GameData";
+import {UpdateWithGameData} from "../elem/UpdateWithGameData";
 
 export class Game {
 
@@ -12,7 +13,7 @@ export class Game {
   constructor(gameToken: string, playerToken: string) {
     this.gameToken = gameToken;
     this.playerToken = playerToken;
-    this.iteration = 0;
+    this.iteration = -1;
     this.run = false;
   }
 
@@ -39,6 +40,7 @@ export class Game {
           .then(response => {
             return response;})));
         this.iteration = newGameData.iteration;
+        UpdateWithGameData.perform(newGameData);
       }
     }
   }
