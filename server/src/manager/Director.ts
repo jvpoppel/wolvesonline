@@ -97,6 +97,10 @@ export class Director {
       getLogger().debug("[Director] Could not kick player " + playerToken.getToken() + " from game " + gameToken.getToken() + ": Player not in game.");
       return undefined;
     }
+    if (!GameManager.get().getByToken(gameToken).playerCanJoin()) {
+      getLogger().debug("[Director] Could not kick player " + playerToken.getToken() + " from game " + gameToken.getToken() + ": Game already started!");
+      return undefined;
+    }
 
     // Player is in game, remove from PlayerManager & PlayersInGame
     GameManager.get().getByToken(gameToken).deletePlayer(PlayerManager.get().getByToken(playerToken));

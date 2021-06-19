@@ -9,6 +9,7 @@ import {TSMap} from "typescript-map";
 import {apiGetGameIteration} from "./api/APIGetGameIteration";
 import {apiGetGameData} from "./api/APIGetGameData";
 import {apiKickPlayer} from "./api/APIKickPlayer";
+import {apiDisconnectPlayer} from "./api/APIDisconnectPlayer";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -87,19 +88,6 @@ app.post("/api/game/reconnect", function(req, res) {
 });
 
 /*
-  Start game with given gameToken
- */
-app.post("/api/game/start", function (req, res) {
-  logger.info("[EXPRESS] Attempting to start game with token " + req.body.token);
-  const response: boolean = apiStartGame(req.body.token);
-  if (!response) {
-    res.status(400).send(JSON.stringify({"started": "failed"})); // Game could not be started. Is given token correct or has it already been started?
-  } else {
-    res.status(202).send(JSON.stringify({"started": "success"}));
-  }
-});
-
-/*
   GET iteration of given gameToken. Playertoken also sent to check if player actually is in game
  */
 app.get("/api/game/:gametoken/:playertoken/iteration", function(req, res) {
@@ -137,6 +125,38 @@ app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
 app.post("/api/game/:gametoken/:playertoken/kick", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.host + " attempts to kick " + req.params.playertoken + " from game " + req.params.gametoken);
   const response: string = apiKickPlayer(req.params.playertoken, req.body.host, req.params.gametoken);
+  if (response === "unauthorized") {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
+  }
+});
+
+/*
+  PUT disconnect player from game. Initiated by players themselves, no need for check on host.
+  status 400 if one of the tokens is not valid or player is not in game,
+  status 200 iff player has been disconnected from game.
+ */
+app.put("/api/game/:gametoken/:playertoken/disconnect", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to disconnect from game " + req.params.gametoken);
+  const response: string = apiDisconnectPlayer(req.params.playertoken, req.params.gametoken);
+  if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
+  }
+});
+
+/*
+  PUT start game. Initiated by host.
+  status 400 if one of the tokens is not valid or player is not in game,
+  status 200 iff player has been disconnected from game.
+ */
+app.put("/api/game/:gametoken/start", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.body.host + " attempts to start game " + req.params.gametoken);
+  const response: string = apiStartGame(req.body.host, req.params.gametoken);
   if (response === "unauthorized") {
     res.status(401).send(JSON.stringify({"status": "failed"}));
   } else if (response === "failed") {

@@ -83,6 +83,7 @@ export class Game {
       return false;
     }
     this.state = GameState.OPEN_INPROGRESS;
+    this.iteration++;
     return true;
   }
 

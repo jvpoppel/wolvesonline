@@ -19,6 +19,9 @@ export class WebElements {
   public static PLAYER_LIST_BODY_HOST(): HTMLElement { return document.getElementById("player-list-body-host");}
   public static PLAYER_LIST_BODY_PLAYER(): HTMLElement { return document.getElementById("player-list-body-player");}
   public static KICK_PLAYER(playerToken: string): HTMLElement { return document.getElementById(playerToken + "-kick");}
+  public static START_DISCONNECT_BUTTONS(): HTMLElement { return document.getElementById("row-player-startstop");}
+  public static DISCONNECT(): HTMLElement { return document.getElementById("disconnect");}
+  public static START(): HTMLElement { return document.getElementById("start");}
 
   /* NARRATOR CONTROLS */
   public static HOST_ROW(): HTMLElement { return document.getElementById("row-host");}

@@ -5,6 +5,8 @@ import {LocalStorage} from "./data/LocalStorage";
 import {ReconnectGameAPI} from "./api/ReconnectGameAPI";
 import {DisplayManager} from "./elem/DisplayManager";
 import {Game} from "./game/Game";
+import {DisconnectAPI} from "./api/DisconnectAPI";
+import {StartGameAPI} from "./api/StartGameAPI";
 
 $(() => {
   new Main();
@@ -40,7 +42,7 @@ export class Main {
   }
 
   /*
-  Perform API call to join a game, and start it locally
+  Perform API call to join a game, and initiate it locally
    */
   public async performJoinGameApi(): Promise<void> {
     const gameToken: string = (<HTMLInputElement> WebElements.JOIN_TOKEN()).value;
@@ -51,7 +53,7 @@ export class Main {
   }
 
   /*
-  Perform API call to reconnect to an existing game, and start it if it exists.
+  Perform API call to reconnect to an existing game, and initiate it if it exists.
    */
   public async reconnectGameApi(gameToken: string, playerToken: string): Promise<void> {
     await ReconnectGameAPI.send(gameToken, playerToken).then(response => {
@@ -61,9 +63,22 @@ export class Main {
     });
   }
 
+  /*
+  Perform API call to start a game
+   */
+  public async performStartGameApi(): Promise<void> {
+    await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken());
+  }
+
+  public async performDisconnectFromGameApi(): Promise<void> {
+    await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken());
+  }
+
   private setupBaseEventListeners(): void {
     WebElements.CREATE_GAME().addEventListener("click", () => this.performCreateGameApi());
     WebElements.JOIN_BUTTON().addEventListener("click", () => this.performJoinGameApi());
+    WebElements.DISCONNECT().addEventListener("click", () => this.performDisconnectFromGameApi());
+    WebElements.START().addEventListener("click", () => this.performStartGameApi());
   }
 
 }

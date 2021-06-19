@@ -20,11 +20,15 @@ export class DisplayManager {
   public static LoadingToGame(): void {
     WebElements.LOADING_PAGE().style.display = "none";
     WebElements.GAME_PAGE().style.display = "";
+    WebElements.START_DISCONNECT_BUTTONS().style.display = "";
+    WebElements.START().style.display = "none";
   }
 
   public static HomePageToGame(): void {
     WebElements.HOME_PAGE().style.display = "none";
     WebElements.GAME_PAGE().style.display = "";
+    WebElements.START_DISCONNECT_BUTTONS().style.display = "";
+    WebElements.START().style.display = "none";
   }
 
   public static UpdateGameCode(code: string): void {
@@ -36,6 +40,14 @@ export class DisplayManager {
     WebElements.GAME_PAGE().style.display = "none";
     WebElements.PLAYER_LIST_BODY_HOST().innerHTML = "";
     WebElements.PLAYER_LIST_BODY_PLAYER().innerHTML = "";
+  }
+
+  public static HIDE_START_STOP(): void {
+    WebElements.START_DISCONNECT_BUTTONS().style.display = "none";
+  }
+
+  public static SHOW_START(): void {
+    WebElements.START().style.display = "";
   }
 
   public static PlayerIsHost(): void {
