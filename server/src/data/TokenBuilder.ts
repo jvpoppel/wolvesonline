@@ -5,9 +5,11 @@ import {NullToken} from "../model/NullToken";
 export class TokenBuilder {
 
   private token: string;
+  private uuid: string;
 
   constructor() {
     this.token = "";
+    this.uuid = "";
   }
 
   public setToken(token: string): TokenBuilder {
@@ -15,8 +17,16 @@ export class TokenBuilder {
     return this;
   }
 
+  public setUUID(uuid: string): TokenBuilder {
+    this.uuid = uuid;
+    return this;
+  }
+
   public forPlayer(): PlayerToken {
-    return new PlayerToken(this.token);
+    if (this.uuid === "") {
+      throw new Error("No UUID specified for player");
+    }
+    return new PlayerToken(this.token, this.uuid);
   }
 
   public forGame(): GameToken {

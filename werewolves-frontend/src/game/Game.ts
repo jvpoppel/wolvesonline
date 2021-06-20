@@ -9,12 +9,14 @@ export class Game {
 
   private gameToken: string;
   private playerToken: string;
+  private uuid: string;
   private iteration: number; // Known game iteration
   private run: boolean; // Iff true: Loop continues
 
   constructor(gameToken: string, playerToken: string) {
     this.gameToken = gameToken;
     this.playerToken = playerToken;
+    this.uuid = LocalStorage.uuid();
     this.iteration = -1;
     this.run = false;
   }
@@ -43,9 +45,11 @@ export class Game {
         this.run = false;
       } else if (serverIteration != this.iteration) {
         console.debug(Date.now() + ": Client out of sync with server. Fetching server data...");
-        const newGameData: GameData = await new Promise<GameData>(resolve => resolve(GetGameDataAPI.send(this.playerToken, this.gameToken, this.iteration)
-          .then(response => {
-            return response;})));
+        const newGameData: GameData = await new Promise<GameData>(resolve => resolve(
+          GetGameDataAPI.send(this.playerToken, this.gameToken, this.iteration, this.uuid)
+            .then(response => {
+              return response;
+            })));
         this.iteration = newGameData.iteration;
         UpdateWithGameData.perform(newGameData);
       }

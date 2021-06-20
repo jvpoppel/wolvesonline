@@ -67,7 +67,7 @@ export class UpdateWithGameData {
 
 export async function kick(event) {
   const playerToKick = event.target.id.split("-")[0];
-  await KickPlayerFromGameAPI.send(playerToKick, LocalStorage.gameToken(), LocalStorage.playerToken()).then(response => {
+  await KickPlayerFromGameAPI.send(playerToKick, LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid()).then(response => {
     if (response.status !== "success") {
       console.log("KickPlayerFromGame failed:" + response);
     }

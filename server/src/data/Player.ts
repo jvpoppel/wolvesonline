@@ -1,11 +1,11 @@
 import {TokenBuilder} from "./TokenBuilder";
-import {Token} from "../model/Token";
 import {PlayerToken} from "../model/PlayerToken";
 import {GameRole} from "../model/GameRole";
+import {NullToken} from "../model/NullToken";
 
 export class Player {
 
-  private token: Token;
+  private token: PlayerToken | NullToken;
   private name: string;
   private role: GameRole;
   private alive: boolean;
@@ -26,6 +26,9 @@ export class Player {
   }
 
   public getToken(): PlayerToken {
+    if (this.token instanceof NullToken) {
+      throw new Error("Player has no token assigned");
+    }
     return this.token;
   }
 

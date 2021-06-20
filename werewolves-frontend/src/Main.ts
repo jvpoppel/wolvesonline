@@ -23,8 +23,8 @@ export class Main {
     If LocalStorage contains both a game- and player token, attempt to reconnect.
     Otherwise, clear anything still present in LocalStorage and go to homepage.
      */
-    if ((LocalStorage.gameToken() != null) && (LocalStorage.playerToken() != null)) {
-      this.reconnectGameApi(LocalStorage.gameToken(), LocalStorage.playerToken());
+    if ((LocalStorage.gameToken() != null) && (LocalStorage.playerToken() != null) && (LocalStorage.uuid() != null)) {
+      this.reconnectGameApi(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
     } else {
       LocalStorage.clear();
       DisplayManager.LoadingToHome();
@@ -55,8 +55,8 @@ export class Main {
   /*
   Perform API call to reconnect to an existing game, and initiate it if it exists.
    */
-  public async reconnectGameApi(gameToken: string, playerToken: string): Promise<void> {
-    await ReconnectGameAPI.send(gameToken, playerToken).then(response => {
+  public async reconnectGameApi(gameToken: string, playerToken: string, uuid: string): Promise<void> {
+    await ReconnectGameAPI.send(gameToken, playerToken, uuid).then(response => {
       if (response.get("connected") === "success") {
         this.currentGame = new Game(response.get("gameToken"), response.get("playerToken")).start();
       }
@@ -67,11 +67,11 @@ export class Main {
   Perform API call to start a game
    */
   public async performStartGameApi(): Promise<void> {
-    await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken());
+    await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
   }
 
   public async performDisconnectFromGameApi(): Promise<void> {
-    await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken());
+    await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
   }
 
   private setupBaseEventListeners(): void {

@@ -53,7 +53,8 @@ export class Director {
     this.playersInGame.set(createdGame.getToken(), new Set<PlayerToken>().add(createdPlayer.getToken()));
 
     return new TSMap<string, string>().set("playerToken", createdPlayer.getToken().getToken())
-      .set("gameToken", createdGame.getToken().getToken());
+      .set("gameToken", createdGame.getToken().getToken())
+      .set("uuid", createdPlayer.getToken().getUUID());
   }
 
   public joinGameForPlayer(gameToken: GameToken, playerName: string): string | undefined {
@@ -62,7 +63,7 @@ export class Director {
     if (GameManager.get().getByToken(gameToken).addPlayer(newPlayer)) {
       this.playersInGame.get(gameToken).add(newPlayer.getToken());
       getLogger().debug("[Director] Added player " + newPlayer.getToken().getToken() + " to game " + gameToken.getToken());
-      return JSON.stringify({"player": newPlayer.getToken().getToken()});
+      return JSON.stringify({"player": newPlayer.getToken().getToken(), "uuid": newPlayer.getToken().getUUID()});
     }
     getLogger().debug("[Director] Could not add player to game " + gameToken.getToken());
     return undefined;

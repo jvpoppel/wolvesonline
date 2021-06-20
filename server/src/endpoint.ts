@@ -10,6 +10,10 @@ import {apiGetGameIteration} from "./api/APIGetGameIteration";
 import {apiGetGameData} from "./api/APIGetGameData";
 import {apiKickPlayer} from "./api/APIKickPlayer";
 import {apiDisconnectPlayer} from "./api/APIDisconnectPlayer";
+import {validateParams} from "./api/validators/ParamsValidator";
+import {Validation} from "./api/Validation";
+import {AuthResponse} from "./api/responses/AuthResponse";
+import {AuthValidator} from "./api/validators/AuthValidator";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -57,8 +61,17 @@ app.get("/", function (req, res) {
  */
 app.post("/api/game/create", function (req, res) {
   logger.info("[EXPRESS] Creating new game");
+  const paramsValidation: Validation | undefined = validateParams(req.body.playerName).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+
   const response: TSMap<string, string> = apiCreateGame(req.body.playerName);
-  res.status(201).send(JSON.stringify({"playerToken": response.get("playerToken"), "gameToken": response.get("gameToken")}));
+  res.status(201).send(JSON.stringify({
+    "playerToken": response.get("playerToken"),
+    "gameToken": response.get("gameToken"),
+    "uuid": response.get("uuid")}));
 });
 
 /*
@@ -66,6 +79,17 @@ app.post("/api/game/create", function (req, res) {
  */
 app.post("/api/game/join", function(req, res) {
   logger.info("[EXPRESS] Attempting to join game " + req.body.gameToken);
+  const paramsValidation: Validation | undefined = validateParams(req.body.playerName).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidateGame(req.body.gameToken)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const gameResponse = apiJoinGame(req.body.gameToken, req.body.playerName);
   if (gameResponse == undefined) {
     res.status(400).send("Could not join game.");
@@ -79,7 +103,9 @@ app.post("/api/game/join", function(req, res) {
  */
 app.post("/api/game/reconnect", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.playerToken + " is attempting to rejoin game " + req.body.gameToken);
+
   const gameResponse = apiReconnectGame(req.body.playerToken, req.body.gameToken);
+
   if (gameResponse == undefined) {
     res.status(200).send(JSON.stringify({"connected": "failed"}));
   } else {
@@ -106,6 +132,17 @@ app.get("/api/game/:gametoken/:playertoken/iteration", function(req, res) {
   status 200 with gameData in json format
  */
 app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid, req.body.iteration).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const response: any = apiGetGameData(req.params.gametoken, req.params.playertoken, req.body.iteration);
   if (response === "failed") {
     res.status(400).send(JSON.stringify({"status": "failed"}));
@@ -124,6 +161,17 @@ app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
  */
 app.post("/api/game/:gametoken/:playertoken/kick", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.host + " attempts to kick " + req.params.playertoken + " from game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid, req.body.host).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.body.host, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const response: string = apiKickPlayer(req.params.playertoken, req.body.host, req.params.gametoken);
   if (response === "unauthorized") {
     res.status(401).send(JSON.stringify({"status": "failed"}));
@@ -141,6 +189,18 @@ app.post("/api/game/:gametoken/:playertoken/kick", function(req, res) {
  */
 app.put("/api/game/:gametoken/:playertoken/disconnect", function(req, res) {
   logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to disconnect from game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const response: string = apiDisconnectPlayer(req.params.playertoken, req.params.gametoken);
   if (response === "failed") {
     res.status(400).send(JSON.stringify({"status": "failed"}));
@@ -156,6 +216,18 @@ app.put("/api/game/:gametoken/:playertoken/disconnect", function(req, res) {
  */
 app.put("/api/game/:gametoken/start", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.host + " attempts to start game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.gametoken, req.body.uuid, req.body.host).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.body.host, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const response: string = apiStartGame(req.body.host, req.params.gametoken);
   if (response === "unauthorized") {
     res.status(401).send(JSON.stringify({"status": "failed"}));

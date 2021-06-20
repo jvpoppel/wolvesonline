@@ -15,16 +15,17 @@ export class CreateGameAPI {
     }
     this.sending = true;
 
-    return await new BaseApi().post<{playerToken: string; gameToken: string}>("{0}:{1}/api/game/create"
+    return await new BaseApi().post<{playerToken: string; gameToken: string, uuid: string}>("{0}:{1}/api/game/create"
       .replace("{0}", Config.serverURL).replace("{1}", Config.port), {"playerName": playerName})
-      .then(({playerToken, gameToken}) => {
+      .then(({playerToken, gameToken, uuid}) => {
         LocalStorage.setPlayerToken(playerToken);
         LocalStorage.setGameToken(gameToken);
+        LocalStorage.setUUID(uuid);
         DisplayManager.HomePageToGame();
         DisplayManager.PlayerIsHost();
         DisplayManager.UpdateGameCode(gameToken);
         this.sending = false;
-        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", playerToken);
+        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", playerToken).set("uuid", uuid);
       });
   }
 }

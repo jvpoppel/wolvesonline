@@ -5,7 +5,7 @@ export class DisconnectAPI {
 
   private static sending: boolean;
 
-  public static async send(gameToken: string, playerToken: string): Promise<string> {
+  public static async send(gameToken: string, playerToken: string, uuid: string): Promise<string> {
     if (this.sending) {
       console.warn("DisconnectAPI: Asked for new request but previous request is still sending!");
       return;
@@ -14,7 +14,7 @@ export class DisconnectAPI {
 
     return await new BaseApi().put<{status: string}>("{0}:{1}/api/game/{2}/{3}/disconnect"
       .replace("{0}", Config.serverURL).replace("{1}", Config.port)
-      .replace("{2}", gameToken).replace("{3}", playerToken), undefined)
+      .replace("{2}", gameToken).replace("{3}", playerToken), {"uuid": uuid})
       .then(({status}) => {
         this.sending = false;
         return status;

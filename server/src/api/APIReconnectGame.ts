@@ -3,6 +3,7 @@ import {TokenManager} from "../manager/TokenManager";
 import {Token} from "../model/Token";
 import {Director} from "../manager/Director";
 import {getLogger} from "../endpoint";
+import {PlayerToken} from "../model/PlayerToken";
 
 export function apiReconnectGame(playerToken: string, gameToken: string): string | undefined {
 
@@ -21,7 +22,7 @@ export function apiReconnectGame(playerToken: string, gameToken: string): string
     return undefined; // No game on given token
   }
 
-  const toReturn: GameToken | undefined = Director.get().checkIfPlayerInGame(resolvedPlayerToken, resolvedGameToken);
+  const toReturn: GameToken | undefined = Director.get().checkIfPlayerInGame(<PlayerToken> resolvedPlayerToken, resolvedGameToken);
   if (toReturn == undefined) {
     getLogger().debug("[APIReconnectGame] Director returned undefined");
     return undefined;

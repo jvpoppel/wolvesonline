@@ -19,7 +19,7 @@ export function apiKickPlayer(playerToKick: string, supposedHost: string, gameTo
     return "unauthorized";
   }
 
-  const response: boolean | undefined = Director.get().kickPlayerFromGame(resolvedPlayerToKick, resolvedGame);
+  const response: boolean | undefined = Director.get().kickPlayerFromGame(<PlayerToken> resolvedPlayerToKick, resolvedGame);
   if (response === undefined) {
     return "failed";
   } else {

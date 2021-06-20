@@ -5,6 +5,7 @@ import {PlayerToken} from "../model/PlayerToken";
 import {TokenBuilder} from "../data/TokenBuilder";
 import {Token} from "../model/Token";
 import {NullToken} from "../model/NullToken";
+import {getLogger} from "../endpoint";
 
 export class TokenManager {
 
@@ -28,13 +29,16 @@ export class TokenManager {
    */
   public generatePlayerToken(): PlayerToken {
     let generatedToken: string = TokenUtil.generateToken(this.tokenLength);
+    const generatedUUID: string = TokenUtil.generateToken(16);
     while (this.tokens.has(generatedToken)) {
       generatedToken = TokenUtil.generateToken(this.tokenLength);
     }
     const token: PlayerToken = new TokenBuilder()
       .setToken(generatedToken)
+      .setUUID(generatedUUID)
       .forPlayer();
 
+    getLogger().debug("[TokenManager] Generated token & uuid: " + generatedToken + ", " + generatedUUID);
     this.tokens.set(generatedToken, token);
     return token;
   }

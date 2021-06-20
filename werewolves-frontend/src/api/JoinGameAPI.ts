@@ -15,15 +15,16 @@ export class JoinGameAPI {
     }
     this.sending = true;
 
-    return await new BaseApi().post<{player: string}>("{0}:{1}/api/game/join".replace("{0}", Config.serverURL)
+    return await new BaseApi().post<{player: string, uuid: string}>("{0}:{1}/api/game/join".replace("{0}", Config.serverURL)
       .replace("{1}", Config.port), {"gameToken": gameToken, "playerName": playerName})
-      .then(({player}) => {
+      .then(({player, uuid}) => {
         LocalStorage.setPlayerToken(player);
         LocalStorage.setGameToken(gameToken);
+        LocalStorage.setUUID(uuid);
         DisplayManager.HomePageToGame();
         DisplayManager.UpdateGameCode(gameToken);
         this.sending = false;
-        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", player);
+        return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", player).set("uuid", uuid);
       });
   }
 }

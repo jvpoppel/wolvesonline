@@ -20,7 +20,7 @@ export function apiDisconnectPlayer(playerToken: string, gameToken: string): str
     return "failed";
   }
 
-  const response: boolean | undefined = Director.get().kickPlayerFromGame(resolvedPlayer, resolvedGame);
+  const response: boolean | undefined = Director.get().kickPlayerFromGame(<PlayerToken> resolvedPlayer, resolvedGame);
   if (response === undefined) {
     return "failed";
   } else {

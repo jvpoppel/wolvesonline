@@ -18,6 +18,14 @@ export class LocalStorage {
     localStorage.setItem("playerToken", playerToken);
   }
 
+  public static uuid(): string | null {
+    return localStorage.getItem("uuid");
+  }
+
+  public static setUUID(uuid: string): void {
+    localStorage.setItem("uuid", uuid);
+  }
+
   public static clear(): void {
     localStorage.clear();
   }

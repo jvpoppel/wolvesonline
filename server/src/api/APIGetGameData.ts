@@ -17,7 +17,7 @@ export function apiGetGameData(gameToken: string, playerToken: string, iteration
     return "notChanged";
   }
 
-  const result: string = GameData.convert(resolvedGame, resolvedPlayer);
+  const result: string = GameData.convert(resolvedGame, <PlayerToken> resolvedPlayer);
   if (result === "failed") { // If statement doesn't add much for now, implemented for later expansion.
     return "failed";
   }

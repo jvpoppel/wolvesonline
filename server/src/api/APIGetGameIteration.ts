@@ -12,7 +12,7 @@ export function apiGetGameIteration(gameToken: string, playerToken: string): str
   if (resolvedPlayer.isNullToken() || resolvedGame.isNullToken()) {
     return "-1";
   }
-  const result: GameToken | undefined = Director.get().checkIfPlayerInGame(resolvedPlayer, resolvedGame);
+  const result: GameToken | undefined = Director.get().checkIfPlayerInGame(<PlayerToken> resolvedPlayer, resolvedGame);
   if (result == undefined) {
     return "-1";
   } else {
