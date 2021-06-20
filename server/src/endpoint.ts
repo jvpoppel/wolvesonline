@@ -43,12 +43,12 @@ logger.add(new winston.transports.Console({
   format: winston.format.simple(),
 }));
 
-app.use(express.static(__dirname + "/../../werewolves-frontend/dist/werewolves-frontend/"));
+app.use(express.static(__dirname + "/../../wolves-frontend/dist/wolves-frontend/"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname + "/../../werewolves-frontend/dist/werewolves-frontend/index.html"));
+  res.sendFile(path.join(__dirname + "/../../wolves-frontend/dist/wolves-frontend/index.html"));
 });
 
 /*
@@ -243,7 +243,7 @@ app.put("/api/game/:gametoken/start", function(req, res) {
 
 */
 app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname + "/../../werewolves-frontend/dist/werewolves-frontend/index.html"));
+  res.sendFile(path.join(__dirname + "/../../wolves-frontend/dist/wolves-frontend/index.html"));
 });
 
 app.listen(config.port, function () {

@@ -13,7 +13,7 @@
 
 # configs
 /server/config.json
-/werewolves-frontend/src/Config.ts
+/wolves-frontend/src/Config.ts
 
 # misc
 .DS_Store

@@ -1,16 +1,17 @@
 {
-  "name": "werewolves-frontend",
+  "name": "wolves-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Werewolves App",
+  "description": "Frontend for WolvesOnline",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-index": "shx cp ./index.html ./dist/werewolves-frontend",
+    "copy-index": "shx cp ./index.html ./dist/wolves-frontend",
+	"copy-style": "shx cp ./styles/main.css ./dist/wolves-frontend",
     "clean": "npm run clean-build-steps && rm -rf dist",
     "tsc": "tsc",
     "webpack": "webpack",
     "clean-build-steps": "rm -rf build-tsc",
-    "build": "npm run clean && npm run tsc && npm run webpack && npm run clean-build-steps && npm run copy-index"
+    "build": "npm run clean && npm run tsc && npm run webpack && npm run clean-build-steps && npm run copy-index && npm run copy-style"
   },
   "repository": {
     "type": "git",
