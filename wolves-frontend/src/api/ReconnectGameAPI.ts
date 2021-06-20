@@ -15,7 +15,7 @@ export class ReconnectGameAPI {
     }
     this.sending = true;
 
-    return await new BaseApi().post<{connected: string}>("{0}:{1}/api/game/reconnect".replace("{0}", Config.serverURL)
+    return await new BaseApi().post<{connected: string, status: number}>("{0}:{1}/api/game/reconnect".replace("{0}", Config.serverURL)
       .replace("{1}", Config.port), {"gameToken": gameToken, "playerToken": playerToken, "uuid": uuid})
       .then(({connected}) => {
         if (connected === undefined) {

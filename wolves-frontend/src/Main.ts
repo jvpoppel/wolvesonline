@@ -59,6 +59,9 @@ export class Main {
     await ReconnectGameAPI.send(gameToken, playerToken, uuid).then(response => {
       if (response.get("connected") === "success") {
         this.currentGame = new Game(response.get("gameToken"), response.get("playerToken")).start();
+      } else {
+        LocalStorage.clear();
+        DisplayManager.LoadingToHome();
       }
     });
   }

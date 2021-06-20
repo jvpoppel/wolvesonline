@@ -104,12 +104,18 @@ app.post("/api/game/join", function(req, res) {
 app.post("/api/game/reconnect", function(req, res) {
   logger.info("[EXPRESS] Player " + req.body.playerToken + " is attempting to rejoin game " + req.body.gameToken);
 
+  const authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.body.playerToken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
   const gameResponse = apiReconnectGame(req.body.playerToken, req.body.gameToken);
 
   if (gameResponse == undefined) {
-    res.status(200).send(JSON.stringify({"connected": "failed"}));
+    res.status(200).send(JSON.stringify({"status": 401, "connected": "failed"}));
   } else {
-    res.status(200).send(JSON.stringify({"connected": "success"})); // Return game token
+    res.status(200).send(JSON.stringify({"status": 200, "connected": "success"})); // Return game token
   }
 });
 
