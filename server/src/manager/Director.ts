@@ -6,6 +6,7 @@ import { GameToken } from "../model/GameToken";
 import {PlayerToken} from "../model/PlayerToken";
 import {TSMap} from "typescript-map";
 import {getLogger} from "../endpoint";
+import {TokenManager} from "./TokenManager";
 
 export class Director {
 
@@ -102,10 +103,11 @@ export class Director {
       return undefined;
     }
 
-    // Player is in game, remove from PlayerManager & PlayersInGame
+    // Player is in game, remove from PlayerManager & PlayersInGame and delete all token references.
     GameManager.get().getByToken(gameToken).deletePlayer(PlayerManager.get().getByToken(playerToken));
     PlayerManager.get().deleteByToken(playerToken);
     this.playersInGame.get(gameToken).delete(playerToken);
+    TokenManager.get().delete(playerToken.getToken());
     return true;
   }
 }

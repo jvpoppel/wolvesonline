@@ -65,4 +65,14 @@ export class TokenManager {
     }
     return this.tokens.get(givenToken);
   }
+
+  /**
+   * Deletes the map entry of given token and return 'true' iff succeeded.
+   */
+  public delete(token: string): boolean {
+    if (!this.tokens.has(token)) {
+      return false;
+    }
+    return this.tokens.delete(token);
+  }
 }
