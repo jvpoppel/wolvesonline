@@ -125,6 +125,31 @@ export class Director {
     return GameManager.get().getByToken(gameToken).start();
   }
 
+  public getRoleOfPlayerAsPlayer(queryPlayer: Player, callingPlayer: Player): GameRole {
+    if (!callingPlayer.isAlive() || callingPlayer.getRole() === GameRole.NARRATOR) {
+      // Dead players and the narrator can see every role
+      return queryPlayer.getRole();
+    }
+    if (callingPlayer === queryPlayer) {
+      // A player is allowed to get their own role
+      return callingPlayer.getRole();
+    }
+    if (callingPlayer.getRole() === GameRole.UNDECIDED) {
+      // If roles have not yet been divided, return Undecided.
+      return GameRole.UNDECIDED;
+    }
+    if (queryPlayer.getRole() === GameRole.NARRATOR) {
+      // Everyone can see the narrator
+      return GameRole.NARRATOR;
+    }
+    if (queryPlayer.getRole() === GameRole.WOLF && callingPlayer.getRole() === GameRole.WOLF) {
+      // If asked player is wolf, AND calling player is wolf, return Wolf. Wolves know who the other wolves are.
+      return GameRole.WOLF;
+    }
+    // If none of the above conditions apply, return Undecided.
+    return GameRole.UNDECIDED;
+  }
+
   /**
    * Given a game and it's designated narrator, give all players in game a random role.
    * @param gameToken Game to divide roles for

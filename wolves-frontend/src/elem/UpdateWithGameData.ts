@@ -13,6 +13,8 @@ export class UpdateWithGameData {
 
     const playerTokensAsList = Array.from(data.playerTokens);
     const playerNamesAsList = Array.from(data.playerNames);
+    const playerRolesAsList = Array.from(data.playerRoles);
+    const playersAliveAsList = Array.from(data.playersAliveInGame);
 
     // First; update player list.
     let htmlToAdd = "";
@@ -22,10 +24,11 @@ export class UpdateWithGameData {
     while (playerIndex < playerNamesAsList.length) {
       playersAndTokens.set(playerTokensAsList[playerIndex], playerNamesAsList[playerIndex]);
 
-      if (playerIsHost) { // If host: Only add when game has not been started.
-        htmlToAdd += playerListRow(playerNamesAsList[playerIndex], playerTokensAsList[playerIndex], (!data.started));
+      if (playerIsHost && !data.started) { // If host: Only add when game has not been started.
+        htmlToAdd += playerListRow(playerNamesAsList[playerIndex], playerTokensAsList[playerIndex], (!data.started), "", true);
       } else {
-        htmlToAdd += playerListRow(playerNamesAsList[playerIndex], playerTokensAsList[playerIndex], false);
+        htmlToAdd += playerListRow(playerNamesAsList[playerIndex], playerTokensAsList[playerIndex],
+          false, playerRolesAsList[playerIndex], playersAliveAsList[playerIndex] === "true");
       }
 
       playerIndex++;

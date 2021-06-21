@@ -32,6 +32,15 @@ export class Player {
     return this.token;
   }
 
+  public isAlive(): boolean {
+    return this.alive;
+  }
+
+  public setDead(): Player {
+    this.alive = false;
+    return this;
+  }
+
   public setName(name: string): Player {
     this.name = name;
     return this;
@@ -46,5 +55,4 @@ export class Player {
     this.token = token;
     return this;
   }
-
 }

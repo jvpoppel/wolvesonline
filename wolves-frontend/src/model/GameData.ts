@@ -8,6 +8,9 @@ export interface GameData {
   finished?: boolean,
   playerTokens?: string[],
   playerNames?: string[],
+  playerRoles?: string[],
+  playersAliveInGame?: string[]
   role?: string,
-  roleDescription?: string
+  roleDescription?: string,
+  alive?: boolean
 }

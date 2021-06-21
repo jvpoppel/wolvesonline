@@ -35,6 +35,9 @@ export class GameData {
     const playersInGameLST = Array.from(playersInGame);
     const playerNamesInGame: string[] = playersInGameLST.map(playerToken => PlayerManager.get().getByToken(playerToken).getName());
     const playerTokensInGame: string[] = playersInGameLST.map(playerToken => playerToken.getToken());
+    const playerRolesInGame: string[] = playersInGameLST.map(queryToken =>
+      Director.get().getRoleOfPlayerAsPlayer(PlayerManager.get().getByToken(queryToken), player));
+    const playerAliveInGame: string[] = playersInGameLST.map(playerToken => PlayerManager.get().getByToken(playerToken).isAlive() + "");
 
     return {
       "status": "success",
@@ -46,8 +49,11 @@ export class GameData {
       "finished": game.isFinished(),
       "playerTokens": playerTokensInGame,
       "playerNames": playerNamesInGame,
+      "playerRoles": playerRolesInGame,
+      "playersAliveInGame": playerAliveInGame,
       "role": player.getRole(),
-      "roleDescription": player.getRole() + " TODO: Change to description"
+      "roleDescription": player.getRole() + " TODO: Change to description",
+      "alive": player.isAlive()
     };
   }
 }
