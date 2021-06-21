@@ -22,7 +22,6 @@ export class CreateGameAPI {
         LocalStorage.setGameToken(gameToken);
         LocalStorage.setUUID(uuid);
         DisplayManager.HomePageToGame();
-        DisplayManager.PlayerIsHost();
         DisplayManager.UpdateGameCode(gameToken);
         this.sending = false;
         return new TSMap<string, string>().set("gameToken", gameToken).set("playerToken", playerToken).set("uuid", uuid);

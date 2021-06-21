@@ -63,6 +63,15 @@ export class Game {
     return this.token;
   }
 
+  /* Increases the game iteration by 1. Please note: This triggers an update for all clients */
+  public increaseIteration(): void {
+    this.iteration ++;
+  }
+
+  public isFinished(): boolean {
+    return this.state == GameState.RESOLVED_FINALIZE || this.state == GameState.RESOLVED_WAITFORTOKENRELEASE;
+  }
+
   public playerCanJoin(): boolean {
     return this.state == GameState.OPEN_WAITFORPLAYERS;
   }

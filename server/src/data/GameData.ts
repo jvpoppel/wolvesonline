@@ -43,8 +43,11 @@ export class GameData {
       "host": game.getHost(),
       "iteration": game.getIteration(),
       "started": !game.playerCanJoin(),
+      "finished": game.isFinished(),
       "playerTokens": playerTokensInGame,
-      "playerNames": playerNamesInGame
+      "playerNames": playerNamesInGame,
+      "role": player.getRole(),
+      "roleDescription": player.getRole() + " TODO: Change to description"
     };
   }
 }

@@ -70,7 +70,17 @@ export class Main {
   Perform API call to start a game
    */
   public async performStartGameApi(): Promise<void> {
-    await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
+    let narratorToken = "";
+    WebElements.NARRATOR_RADIOBUTTONS().forEach(function(radioButton: HTMLInputElement) {
+      if (radioButton.checked) {
+        narratorToken = radioButton.id.split("-")[0];
+      }
+    });
+    if (narratorToken === "") {
+      window.alert("Could not start game: Please choose a narrator");
+      return;
+    }
+    await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(), narratorToken);
   }
 
   public async performDisconnectFromGameApi(): Promise<void> {
@@ -82,6 +92,7 @@ export class Main {
     WebElements.JOIN_BUTTON().addEventListener("click", () => this.performJoinGameApi());
     WebElements.DISCONNECT().addEventListener("click", () => this.performDisconnectFromGameApi());
     WebElements.START().addEventListener("click", () => this.performStartGameApi());
+    WebElements.ROLE_INFO_BUTTON().addEventListener("click", () => $("#roleModal").modal("show"));
   }
 
 }

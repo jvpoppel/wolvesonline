@@ -1,6 +1,7 @@
 export enum GameRole {
-  UNDECIDED,
-  VERTELLER,
-  WOLF,
-  ZIENER
+  UNDECIDED= "Not yet decided.",
+  NARRATOR = "Narrator",
+  WOLF = "Wolf",
+  MEDIUM = "Medium",
+  CIVILIAN = "Civilian"
 }

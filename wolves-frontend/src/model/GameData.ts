@@ -5,6 +5,9 @@ export interface GameData {
   host?: string,
   iteration?: number,
   started?: boolean,
+  finished?: boolean,
   playerTokens?: string[],
-  playerNames?: string[]
+  playerNames?: string[],
+  role?: string,
+  roleDescription?: string
 }

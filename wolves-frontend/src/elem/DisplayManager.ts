@@ -49,9 +49,4 @@ export class DisplayManager {
   public static SHOW_START(): void {
     WebElements.START().style.display = "";
   }
-
-  public static PlayerIsHost(): void {
-    console.log("Todo: Rework host row to contain start button");
-    //WebElements.HOST_ROW().style.display = "";
-  }
 }

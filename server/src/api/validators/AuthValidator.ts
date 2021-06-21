@@ -12,10 +12,11 @@ export class AuthValidator {
     const supposedPlayer: PlayerToken | NullToken = TokenManager.get().getFromString(playerToken);
 
     if (supposedPlayer.isNullToken()) {
-      getLogger().warn("supposedPlayer is null " + supposedPlayer.getToken());
+      getLogger().debug("[AuthValidator] supposedPlayer is null " + supposedPlayer.getToken());
       return AuthErrorResponse.UNKNOWN_TOKEN;
     }
     if ((<PlayerToken> supposedPlayer).getUUID() !== uuid) {
+      getLogger().debug("[AuthValidator] UUID did not match for player " + supposedPlayer.getToken());
       return AuthErrorResponse.WRONG_UUID;
     }
     return new AuthSuccessResponse();

@@ -54,30 +54,6 @@
             </div>
           </div>
           <hr>
-
-          <!-- Modal Input Sound -->
-          <div id="soundModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-              <!-- Modal content-->
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">Input Audio</h4>
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-
-                <div class="modal-body">
-                  <input type="file" id="inputSound"/>
-                  <audio id="sound" style="display: none" controls></audio>
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
-                </div>
-              </div>
-
-            </div>
-          </div>
         </div>
 
         <div class="container" id="container-game" style="display: none">
@@ -95,7 +71,7 @@
           </div>
           <hr>
           <div class="row" id="row-player-list">
-            <table id="playerListForHost" style="display: none">
+            <table id="playerListForHost" style="display: none" class="table table-hover">
               <thead>
                 <tr>
                   <th>
@@ -104,12 +80,13 @@
                   <th>
                     Narrator?
                   </th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="player-list-body-host">
               </tbody>
             </table>
-            <table id="playerListForPlayers">
+            <table id="playerListForPlayers" class="table">
               <thead>
               <tr>
                 <th>
@@ -189,6 +166,47 @@
         </footer>
       </div>
     </div>
+
+    <!-- Modal: Role Information -->
+    <div id="roleModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Role information</h4>
+            <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+              <tr>
+                <th>
+                  Role
+                </th>
+                <th>
+                  Description
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td><span id="roleName"></span></td>
+                <td><span id="roleInformation"></span></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- JQuery, Bootstrap and jshue libraries incl. dependencies -->
     <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"

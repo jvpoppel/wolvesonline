@@ -62,6 +62,12 @@ export class UpdateWithGameData {
     } else {
       DisplayManager.HIDE_START_STOP();
     }
+
+    /*
+    After that, we update the role information
+     */
+    WebElements.ROLE_NAME().innerHTML = data.role;
+    WebElements.ROLE_INFO().innerHTML = data.roleDescription;
   }
 }
 

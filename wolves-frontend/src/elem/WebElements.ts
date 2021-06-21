@@ -22,6 +22,11 @@ export class WebElements {
   public static START_DISCONNECT_BUTTONS(): HTMLElement { return document.getElementById("row-player-startstop");}
   public static DISCONNECT(): HTMLElement { return document.getElementById("disconnect");}
   public static START(): HTMLElement { return document.getElementById("start");}
+  public static NARRATOR_RADIOBUTTONS(): NodeListOf<HTMLElement> { return document.getElementsByName("narratorSelection");}
+
+  /* Role information */
+  public static ROLE_NAME(): HTMLElement { return document.getElementById("roleName");}
+  public static ROLE_INFO(): HTMLElement { return document.getElementById("roleInformation");}
 
   /* NARRATOR CONTROLS */
   public static HOST_ROW(): HTMLElement { return document.getElementById("row-host");}
