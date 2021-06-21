@@ -71,38 +71,41 @@
           </div>
           <hr>
           <div class="row" id="row-player-list">
-            <table id="playerListForHost" style="display: none" class="table table-hover">
-              <thead>
+            <button id="show-player-list" data-bs-toggle="collapse" data-bs-target="#playerListWrapper" aria-controls="playerListWrapper" class="btn btn-outline-primary">Toggle playerlist</button>
+            <div class="collapse show" id="playerListWrapper">
+              <table id="playerListForHost" style="display: none" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>
+                      Players
+                    </th>
+                    <th>
+                      Narrator?
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="player-list-body-host">
+                </tbody>
+              </table>
+              <table id="playerListForPlayers" class="table">
+                <thead>
                 <tr>
                   <th>
                     Players
                   </th>
                   <th>
-                    Narrator?
+                    Role
                   </th>
-                  <th></th>
+                  <th>
+                    Alive
+                  </th>
                 </tr>
-              </thead>
-              <tbody id="player-list-body-host">
-              </tbody>
-            </table>
-            <table id="playerListForPlayers" class="table">
-              <thead>
-              <tr>
-                <th>
-                  Players
-                </th>
-                <th>
-                  Role
-                </th>
-                <th>
-                  Alive
-                </th>
-              </tr>
-              </thead>
-              <tbody id="player-list-body-player">
-              </tbody>
-            </table>
+                </thead>
+                <tbody id="player-list-body-player">
+                </tbody>
+              </table>
+            </div>
           </div>
           <div class="row" id="row-player-startstop">
             <div class="col-md-1"></div>
