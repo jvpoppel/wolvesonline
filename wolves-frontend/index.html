@@ -129,16 +129,21 @@
           <div class="row" id="row-night-role-selection" style="display: none">
             <div class="col-md-1"></div>
             <div class="col-md-10 text-center">
-              <table>
-                <tbody>
+              <table class="table">
+                <tbody id="rolesToPerform">
                 <tr>
                   <td>
-                    <button id="werewolves">Werewolves</button>
+                    <button id="werewolves-night">Wolves</button>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <button id="ziener">Ziener</button>
+                    <button id="medium-night">Medium</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <button id="finishNight" style="display: none">Finish night</button>
                   </td>
                 </tr>
                 </tbody>
@@ -146,13 +151,38 @@
             </div>
             <div class="col-md-1"></div>
           </div>
-          <div class="row" id="row-vote" style="display: none">
+          <!-- Player row: Voting process -->
+          <div id="row-vote" style="display: none">
+            <div class="row">
+              <div class="col-md-3"></div>
+              <div class="col-md-6">
+                <select id="voteList">
+                  <option>a</option>
+                  <option>b</option>
+                </select>
+              </div>
+              <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+              <div class="col-md-2"></div>
+              <div class="col-md-8">
+                <button class="btn btn-outline-primary" id="lockVote">Lock vote</button>
+              </div>
+              <div class="col-md-2"></div>
+            </div>
+          </div>
+          <!-- Narrator row: Start night -->
+          <div class="row" id="row-startNight" style="display: none">
             <div class="col-md-3"></div>
             <div class="col-md-6">
-              <select id="voteList">
-                <option>a</option>
-                <option>b</option>
-              </select>
+              <button class="btn btn-outline-primary" id="startNight">Start night</button>
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+          <div class="row" id="row-substate" style="display: none">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <h2 id="subState"></h2>
             </div>
             <div class="col-md-3"></div>
           </div>

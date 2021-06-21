@@ -1,14 +1,16 @@
-import { GameManager } from "./GameManager";
-import { Player } from "../data/Player";
-import { Game } from "../data/Game";
-import { PlayerManager } from "./PlayerManager";
-import { GameToken } from "../model/GameToken";
+import {GameManager} from "./GameManager";
+import {Player} from "../data/Player";
+import {Game} from "../data/Game";
+import {PlayerManager} from "./PlayerManager";
+import {GameToken} from "../model/GameToken";
 import {PlayerToken} from "../model/PlayerToken";
 import {TSMap} from "typescript-map";
 import {getLogger} from "../endpoint";
 import {TokenManager} from "./TokenManager";
 import {FisherYatesShuffle} from "../util/FisherYatesShuffle";
 import {GameRole} from "../model/GameRole";
+import {Token} from "../model/Token";
+import {Night} from "../data/Night";
 
 export class Director {
 
@@ -134,6 +136,10 @@ export class Director {
       // A player is allowed to get their own role
       return callingPlayer.getRole();
     }
+    if (!queryPlayer.isAlive()) {
+      // A player is allowed to see the roles of dead people
+      return queryPlayer.getRole();
+    }
     if (callingPlayer.getRole() === GameRole.UNDECIDED) {
       // If roles have not yet been divided, return Undecided.
       return GameRole.UNDECIDED;
@@ -158,9 +164,14 @@ export class Director {
   public divideRolesForGame(gameToken: GameToken, narrator: PlayerToken): void {
 
     const players: Array<Player> = new Array<Player>();
+    const game: Game = GameManager.get().getByToken(gameToken);
     this.playersInGame.get(gameToken).forEach(function(playerToken) {
       players.push(PlayerManager.get().getByToken(playerToken));
     });
+
+    // Every game has at least one wolf and at least one civilian
+    game.addRoleToGame(GameRole.WOLF);
+    game.addRoleToGame(GameRole.CIVILIAN);
 
     let amountOfWolves = 1;
     //let amountOfCivilians = 0;
@@ -168,6 +179,7 @@ export class Director {
 
     if ((players.length - 1) >= 4) {
       amountOfMediums++; // Only play with a medium when more than 4 players in game.
+      game.addRoleToGame(GameRole.MEDIUM);
     }
     if ((players.length - 1) >= 8) {
       amountOfWolves++; // Two wolves when players.size >= 8 and < 12
@@ -201,5 +213,85 @@ export class Director {
       player.setRole(GameRole.CIVILIAN);
       return;
     });
+  }
+
+  /**
+   * AlivePlayersPerRoleInGame -> Returns a map, key = GameRole, value = amount of players with given role in game.
+   * To be used from a Game instance; thus no check on existance of game.
+   *
+   * @param gameToken Game Token of game to check
+   */
+  public alivePlayersPerRoleInGame(gameToken: GameToken): TSMap<GameRole, number> {
+    const toReturn = new TSMap<GameRole, number>();
+    this.playersInGame.get(gameToken).forEach(function(playerToken: PlayerToken) {
+      const player: Player = PlayerManager.get().getByToken(playerToken);
+      if (!player.isAlive()) {
+        return;
+      }
+      if (toReturn.has(player.getRole())) {
+        toReturn.set(player.getRole(), toReturn.get(player.getRole()) + 1); // Increase current value
+      } else {
+        toReturn.set(player.getRole(), 1); // First instance of role, set to 1.
+      }
+    });
+    return toReturn;
+  }
+
+  public performNightAction(action: string, gameToken: string, playerToken: string): string {
+    const resolvedGameToken: Token = TokenManager.get().getFromString(gameToken);
+    const resolvedPlayerToken: Token = TokenManager.get().getFromString(playerToken);
+    if (!(resolvedGameToken.isGameToken() && resolvedPlayerToken.isPlayerToken())) {
+      return "failed";
+    } else if (PlayerManager.get().getByToken(<PlayerToken> resolvedPlayerToken).getRole() != GameRole.NARRATOR) {
+      return "unauthorized";
+    }
+    const game: Game = GameManager.get().getByToken(resolvedGameToken);
+    if (action === "start") {
+      if (game.startNight()) {
+        return "OK";
+      } else {
+        return "failed";
+      }
+    } else if (action === "finish") {
+      if (game.finishNight()) {
+        return "OK";
+      } else {
+        return "failed";
+      }
+    }
+    // For all other actions, we need the Night object.
+    const night: Night | undefined = game.getNight();
+    if (night === undefined) {
+      return "failed";
+    }
+
+    if (action === "wolves") {
+      if (night.letRolePerform(GameRole.WOLF)) {
+        // TEMP DEBUG CODE: TODO REMOVE!!!!!!!!!!!!!!!!!!!
+        // Kill random non-wolf player
+        let killedSomeone = false;
+        this.playersInGame.get(resolvedGameToken).forEach(function(playerToken) {
+          if (killedSomeone) {return;}
+          const player = PlayerManager.get().getByToken(playerToken);
+          if (player.isAlive() && player.getRole() != GameRole.WOLF && player.getRole() != GameRole.NARRATOR) {
+            night.addKilledPlayer(player);
+            killedSomeone = true;
+          }
+        });
+        game.increaseIteration();
+        return "OK";
+      } else {
+        return "failed";
+      }
+    } else if (action === "medium") {
+      if (night.letRolePerform(GameRole.MEDIUM)) {
+        game.increaseIteration();
+        return "OK";
+      } else {
+        return "failed";
+      }
+    }
+    // None of the possible actions have been given, return failed.
+    return "failed";
   }
 }

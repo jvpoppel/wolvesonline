@@ -7,6 +7,7 @@ import {DisplayManager} from "./elem/DisplayManager";
 import {Game} from "./game/Game";
 import {DisconnectAPI} from "./api/DisconnectAPI";
 import {StartGameAPI} from "./api/StartGameAPI";
+import {NightApi} from "./api/NightApi";
 
 $(() => {
   new Main();
@@ -83,6 +84,14 @@ export class Main {
     await StartGameAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(), narratorToken);
   }
 
+  public async performNightApi(action: string): Promise<void> {
+    await NightApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(), action).then(status => {
+      if (status !== "OK") {
+        console.log("Could not perform selected Night action!");
+      }
+    });
+  }
+
   public async performDisconnectFromGameApi(): Promise<void> {
     await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
   }
@@ -93,6 +102,10 @@ export class Main {
     WebElements.DISCONNECT().addEventListener("click", () => this.performDisconnectFromGameApi());
     WebElements.START().addEventListener("click", () => this.performStartGameApi());
     WebElements.ROLE_INFO_BUTTON().addEventListener("click", () => $("#roleModal").modal("show"));
+    WebElements.START_NIGHT().addEventListener("click", () => this.performNightApi("start"));
+    WebElements.FINISH_NIGHT().addEventListener("click", () => this.performNightApi("finish"));
+    WebElements.WOLVES_NIGHT().addEventListener("click", () => this.performNightApi("wolves"));
+    WebElements.MEDIUM_NIGHT().addEventListener("click", () => this.performNightApi("medium"));
   }
 
 }

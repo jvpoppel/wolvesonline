@@ -5,6 +5,8 @@ import {GameManager} from "../manager/GameManager";
 import {PlayerManager} from "../manager/PlayerManager";
 import {Player} from "./Player";
 import {Director} from "../manager/Director";
+import {GameRole} from "../model/GameRole";
+import {Night} from "./Night";
 
 export class GameData {
 
@@ -39,7 +41,7 @@ export class GameData {
       Director.get().getRoleOfPlayerAsPlayer(PlayerManager.get().getByToken(queryToken), player));
     const playerAliveInGame: string[] = playersInGameLST.map(playerToken => PlayerManager.get().getByToken(playerToken).isAlive() + "");
 
-    return {
+    const generalGameData: any = {
       "status": "success",
       "gameToken": game.getToken().getToken(),
       "playerToken": player.getToken().getToken(),
@@ -47,13 +49,34 @@ export class GameData {
       "iteration": game.getIteration(),
       "started": !game.playerCanJoin(),
       "finished": game.isFinished(),
+      "winningRole": game.getWinningRole(),
       "playerTokens": playerTokensInGame,
       "playerNames": playerNamesInGame,
       "playerRoles": playerRolesInGame,
       "playersAliveInGame": playerAliveInGame,
       "role": player.getRole(),
       "roleDescription": player.getRole() + " TODO: Change to description",
-      "alive": player.isAlive()
+      "alive": player.isAlive(),
+      "substate": game.getSubState()
     };
+    return GameData.addPlayerSpecificData(game, player, generalGameData);
+
+    // Now; put the player-specific data in there.
+  }
+
+  public static addPlayerSpecificData(game: Game, player: Player, currentData: any): any {
+    // Only needed for narrator at this moment.
+    if (player.getRole() === GameRole.NARRATOR) {
+      // Add night-specific data. Thus; roles still needed to perform and players currently killed in night.
+      let rolesStillNeededInNight: GameRole[] = [];
+      let playersKilledInNight: string[] = [];
+      if (game.getNight() != undefined) {
+        rolesStillNeededInNight = (<Night> game.getNight()).rolesThatStillHaveToPerform();
+        playersKilledInNight = (<Night> game.getNight()).getKilledPlayers().map(player => player.getToken().getToken());
+      }
+      const playerSpecificData = { "rolesStillInNight": rolesStillNeededInNight, "playersKilledInNight": playersKilledInNight};
+      return {...currentData, ...playerSpecificData};
+    }
+    return currentData;
   }
 }

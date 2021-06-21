@@ -23,15 +23,19 @@ export class WebElements {
   public static DISCONNECT(): HTMLElement { return document.getElementById("disconnect");}
   public static START(): HTMLElement { return document.getElementById("start");}
   public static NARRATOR_RADIOBUTTONS(): NodeListOf<HTMLElement> { return document.getElementsByName("narratorSelection");}
+  public static SUBSTATE_ROW(): HTMLElement { return document.getElementById("row-substate");}
+  public static SUBSTATE_VALUE(): HTMLElement { return document.getElementById("subState");}
+
+  /* Night */
+  public static NIGHT_SELECTION_ROW(): HTMLElement { return document.getElementById("row-night-role-selection");}
+  public static START_NIGHT(): HTMLElement { return document.getElementById("startNight");}
+  public static FINISH_NIGHT(): HTMLElement { return document.getElementById("finishNight");}
+  public static WOLVES_NIGHT(): HTMLElement { return document.getElementById("werewolves-night");}
+  public static MEDIUM_NIGHT(): HTMLElement { return document.getElementById("medium-night");}
 
   /* Role information */
   public static ROLE_NAME(): HTMLElement { return document.getElementById("roleName");}
   public static ROLE_INFO(): HTMLElement { return document.getElementById("roleInformation");}
-
-  /* NARRATOR CONTROLS */
-  public static HOST_ROW(): HTMLElement { return document.getElementById("row-host");}
-  public static WEREWOLVES_BTN(): HTMLElement { return document.getElementById("werewolves");}
-  public static ZIENER_BTN(): HTMLElement { return document.getElementById("ziener");}
 
   /* VOTING CONTROLS */
   public static VOTE_ROW(): HTMLElement { return document.getElementById("row-vote");}

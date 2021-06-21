@@ -14,6 +14,7 @@ import {validateParams} from "./api/validators/ParamsValidator";
 import {Validation} from "./api/Validation";
 import {AuthResponse} from "./api/responses/AuthResponse";
 import {AuthValidator} from "./api/validators/AuthValidator";
+import {apiNightAction} from "./api/APINightAction";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -156,6 +157,40 @@ app.post("/api/game/:gametoken/:playertoken/data", function(req, res) {
     res.status(304);
   } else {
     res.status(200).json(response);
+  }
+});
+
+/*
+  PUT perform Night flow action
+  status 401 iff playertoken != uuid of player
+  status 400 iff night could not perform flow action
+  status 200 iff flow action has been performed
+ */
+app.put("/api/game/:gametoken/:playertoken/night", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to perform night action " + req.body.action + " in game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid, req.body.action).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  let authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+  authValidation = new AuthResponse(AuthValidator.ValidateGame(req.params.gametoken)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
+  const response: string = apiNightAction(req.body.action, req.params.gametoken, req.params.playertoken);
+  if (response === "unauthorized") {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
   }
 });
 
