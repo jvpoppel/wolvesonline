@@ -63,4 +63,12 @@ export class DisplayManager {
   public static HideNightControls(): void {
     WebElements.NIGHT_SELECTION_ROW().style.display = "none";
   }
+
+  public static ResetNightControls(): void {
+    WebElements.WOLVES_NIGHT().style.display = "";
+    WebElements.MEDIUM_NIGHT().style.display = "";
+    WebElements.FINISH_NIGHT().style.display = "none";
+    WebElements.PLAYERS_KILLED_ROW().style.display = "none";
+    WebElements.PLAYERS_KILLED_TEXT().innerText = "";
+  }
 }

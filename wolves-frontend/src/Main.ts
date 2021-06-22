@@ -86,7 +86,7 @@ export class Main {
 
   public async performNightApi(action: string): Promise<void> {
     await NightApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(), action).then(status => {
-      if (status !== "OK") {
+      if (status !== "success") {
         console.log("Could not perform selected Night action!");
       }
     });

@@ -77,11 +77,38 @@ export class UpdateWithGameData {
     WebElements.ROLE_INFO().innerHTML = data.roleDescription;
 
     /*
+     Then, if game is in PostVote state OR first day, show Start Night for narrator
+     */
+    if ((data.substate === SubState.DAYTIME_POSTVOTE.valueOf() || data.substate === SubState.DAYTIME_FIRST.valueOf())
+      && data.role === "Narrator") {
+
+      WebElements.START_NIGHT_ROW().style.display = "";
+    } else {
+      WebElements.START_NIGHT_ROW().style.display = "None";
+    }
+
+    /*
     After that, check if game is in Night and update the game for the narrator accordingly
      */
     if (data.substate === "Night" && data.role === "Narrator") {
       DisplayManager.ShowNightControls();
-      const rolesStillForNight = Array.from(data.playerNames);
+      const rolesStillForNight = Array.from(data.rolesStillInNight);
+      const playersKilledInNight = Array.from(data.playersKilledInNight);
+      if (playersKilledInNight.length == 0) {
+        WebElements.PLAYERS_KILLED_ROW().style.display = "none";
+        WebElements.PLAYERS_KILLED_TEXT().innerText = "";
+      } else {
+        let playersKilled = "";
+        playersKilledInNight.forEach(player => {
+          if (playersKilled !== "") {
+            playersKilled += ", ";
+          }
+          playersKilled += player;
+        });
+
+        WebElements.PLAYERS_KILLED_TEXT().innerText = playersKilled;
+        WebElements.PLAYERS_KILLED_ROW().style.display = "";
+      }
       if (rolesStillForNight.length == 0) {
         WebElements.FINISH_NIGHT().style.display = "";
       } else {
@@ -89,17 +116,25 @@ export class UpdateWithGameData {
       }
 
       // Make list of which buttons to hide and remove the ones that have to stay.
-      const showButtons: HTMLElement[] = [WebElements.WOLVES_NIGHT(), WebElements.MEDIUM_NIGHT()];
+      const showButtons: string[] = ["Wolf", "Medium"];
       rolesStillForNight.forEach(function(role) {
+        console.log("Role still in night checked: " + role);
         if (role === "Wolf") {
-          showButtons.splice(showButtons.indexOf(WebElements.WOLVES_NIGHT()), 1);
+          showButtons.splice(showButtons.indexOf("Wolf"), 1);
         } else if (role === "Medium") {
-          showButtons.splice(showButtons.indexOf(WebElements.MEDIUM_NIGHT()), 1);
+          showButtons.splice(showButtons.indexOf("Medium"), 1);
         }
       });
-      showButtons.forEach(button => button.style.display = "none");
+      showButtons.forEach(button => {
+        if (button === "Wolf") {
+          WebElements.WOLVES_NIGHT().style.display = "none";
+        } else if (button === "Medium") {
+          WebElements.MEDIUM_NIGHT().style.display = "none";
+        }
+      });
     } else {
       DisplayManager.HideNightControls();
+      DisplayManager.ResetNightControls();
     }
   }
 }

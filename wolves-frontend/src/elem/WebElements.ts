@@ -27,11 +27,15 @@ export class WebElements {
   public static SUBSTATE_VALUE(): HTMLElement { return document.getElementById("subState");}
 
   /* Night */
+  public static START_NIGHT_ROW(): HTMLElement { return document.getElementById("row-startNight");}
   public static NIGHT_SELECTION_ROW(): HTMLElement { return document.getElementById("row-night-role-selection");}
+  public static PLAYERS_KILLED_ROW(): HTMLElement { return document.getElementById("playersKilledRow");}
+  public static PLAYERS_KILLED_TEXT(): HTMLElement { return document.getElementById("playersKilled");}
   public static START_NIGHT(): HTMLElement { return document.getElementById("startNight");}
   public static FINISH_NIGHT(): HTMLElement { return document.getElementById("finishNight");}
   public static WOLVES_NIGHT(): HTMLElement { return document.getElementById("werewolves-night");}
   public static MEDIUM_NIGHT(): HTMLElement { return document.getElementById("medium-night");}
+
 
   /* Role information */
   public static ROLE_NAME(): HTMLElement { return document.getElementById("roleName");}

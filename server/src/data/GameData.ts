@@ -55,7 +55,7 @@ export class GameData {
       "playerRoles": playerRolesInGame,
       "playersAliveInGame": playerAliveInGame,
       "role": player.getRole(),
-      "roleDescription": player.getRole() + " TODO: Change to description",
+      "roleDescription": player.getRole() + " role description",
       "alive": player.isAlive(),
       "substate": game.getSubState()
     };
@@ -72,7 +72,7 @@ export class GameData {
       let playersKilledInNight: string[] = [];
       if (game.getNight() != undefined) {
         rolesStillNeededInNight = (<Night> game.getNight()).rolesThatStillHaveToPerform();
-        playersKilledInNight = (<Night> game.getNight()).getKilledPlayers().map(player => player.getToken().getToken());
+        playersKilledInNight = (<Night> game.getNight()).getKilledPlayers().map(player => player.getName());
       }
       const playerSpecificData = { "rolesStillInNight": rolesStillNeededInNight, "playersKilledInNight": playersKilledInNight};
       return {...currentData, ...playerSpecificData};
