@@ -8,6 +8,9 @@ import {Game} from "./game/Game";
 import {DisconnectAPI} from "./api/DisconnectAPI";
 import {StartGameAPI} from "./api/StartGameAPI";
 import {NightApi} from "./api/NightApi";
+import {ResetVoteApi} from "./api/ResetVoteApi";
+import {FinishVoteApi} from "./api/FinishVoteApi";
+import {VoteOnPlayerApi} from "./api/VoteOnPlayerApi";
 
 $(() => {
   new Main();
@@ -93,19 +96,56 @@ export class Main {
   }
 
   public async performDisconnectFromGameApi(): Promise<void> {
-    await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid());
+    await DisconnectAPI.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid()).then(response => {
+      if (response.status === "success") {
+        LocalStorage.clear();
+        DisplayManager.GameToHomePage();
+      }
+    });
+  }
+
+  public async performResetVoteApi(): Promise<void> {
+    await ResetVoteApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid()).then(response => {
+      if (response.status !== "success") {
+        console.warn("Could not reset vote: " + response);
+        window.alert("Could not reset vote");
+      }
+    });
+  }
+
+  public async performFinishVoteApi(): Promise<void> {
+    await FinishVoteApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid()).then(response => {
+      if (response.status !== "success") {
+        console.warn("Could not finish vote: " + response);
+        window.alert("Could not finish vote");
+      }
+    });
+  }
+
+  public async performVoteOnPlayerApi(): Promise<void> {
+    await VoteOnPlayerApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(),
+      (<HTMLInputElement> WebElements.VOTE_OPTIONS()).value).then(response => {
+
+      if (response.status !== "success") {
+        window.alert("Could not vote on player");
+      }
+    });
   }
 
   private setupBaseEventListeners(): void {
     WebElements.CREATE_GAME().addEventListener("click", () => this.performCreateGameApi());
     WebElements.JOIN_BUTTON().addEventListener("click", () => this.performJoinGameApi());
     WebElements.DISCONNECT().addEventListener("click", () => this.performDisconnectFromGameApi());
+    WebElements.DISCONNECT_AFTER_WIN().addEventListener("click", () => this.performDisconnectFromGameApi());
     WebElements.START().addEventListener("click", () => this.performStartGameApi());
     WebElements.ROLE_INFO_BUTTON().addEventListener("click", () => $("#roleModal").modal("show"));
     WebElements.START_NIGHT().addEventListener("click", () => this.performNightApi("start"));
     WebElements.FINISH_NIGHT().addEventListener("click", () => this.performNightApi("finish"));
     WebElements.WOLVES_NIGHT().addEventListener("click", () => this.performNightApi("wolves"));
     WebElements.MEDIUM_NIGHT().addEventListener("click", () => this.performNightApi("medium"));
+    WebElements.LOCK_VOTE().addEventListener("click", () => this.performVoteOnPlayerApi());
+    WebElements.RESET_VOTE().addEventListener("click", () => this.performResetVoteApi());
+    WebElements.FINISH_VOTE().addEventListener("click", () => this.performFinishVoteApi());
   }
 
 }

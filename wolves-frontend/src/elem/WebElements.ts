@@ -21,10 +21,13 @@ export class WebElements {
   public static KICK_PLAYER(playerToken: string): HTMLElement { return document.getElementById(playerToken + "-kick");}
   public static START_DISCONNECT_BUTTONS(): HTMLElement { return document.getElementById("row-player-startstop");}
   public static DISCONNECT(): HTMLElement { return document.getElementById("disconnect");}
+  public static DISCONNECT_AFTER_WIN(): HTMLElement { return document.getElementById("disconnectWin");}
   public static START(): HTMLElement { return document.getElementById("start");}
   public static NARRATOR_RADIOBUTTONS(): NodeListOf<HTMLElement> { return document.getElementsByName("narratorSelection");}
   public static SUBSTATE_ROW(): HTMLElement { return document.getElementById("row-substate");}
   public static SUBSTATE_VALUE(): HTMLElement { return document.getElementById("subState");}
+  public static WINNER_ROW(): HTMLElement { return document.getElementById("row-win");}
+  public static WINNER_VALUE(): HTMLElement { return document.getElementById("winningRole");}
 
   /* Night */
   public static START_NIGHT_ROW(): HTMLElement { return document.getElementById("row-startNight");}
@@ -42,6 +45,14 @@ export class WebElements {
   public static ROLE_INFO(): HTMLElement { return document.getElementById("roleInformation");}
 
   /* VOTING CONTROLS */
-  public static VOTE_ROW(): HTMLElement { return document.getElementById("row-vote");}
-  public static VOTE_LIST(): HTMLElement { return document.getElementById("voteList");}
+  public static PLAYER_VOTE_ROW(): HTMLElement { return document.getElementById("row-vote-players");}
+  public static NARRATOR_VOTE_ROW(): HTMLElement { return document.getElementById("row-vote-narrator");}
+  public static VOTE_RESULTS_ROW(): HTMLElement { return document.getElementById("row-vote-results");}
+  public static VOTE_OPTIONS(): HTMLElement { return document.getElementById("vote-list");}
+  public static FINISH_VOTE(): HTMLElement { return document.getElementById("vote-finish");}
+  public static LOCK_VOTE(): HTMLElement { return document.getElementById("vote-lock");}
+  public static RESET_VOTE(): HTMLElement { return document.getElementById("vote-reset");}
+  public static VOTE_RESULT_NARRATOR(): HTMLElement { return document.getElementById("vote-result-narrator");}
+  public static PLAYERS_THAT_HAVE_TO_VOTE(): HTMLElement { return document.getElementById("players-that-have-to-vote");}
+  public static VOTE_RESULTS_CONTENT(): HTMLElement { return document.getElementById("vote-result-table-content");}
 }

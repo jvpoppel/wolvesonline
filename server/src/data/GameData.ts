@@ -7,6 +7,8 @@ import {Player} from "./Player";
 import {Director} from "../manager/Director";
 import {GameRole} from "../model/GameRole";
 import {Night} from "./Night";
+import {Vote} from "./Vote";
+import {SubState} from "../model/SubState";
 
 export class GameData {
 
@@ -41,12 +43,33 @@ export class GameData {
       Director.get().getRoleOfPlayerAsPlayer(PlayerManager.get().getByToken(queryToken), player));
     const playerAliveInGame: string[] = playersInGameLST.map(playerToken => PlayerManager.get().getByToken(playerToken).isAlive() + "");
 
+    let voteIteration = -1; // Iteration of games' vote, -1 if there is no vote
+    if (game.getVote() != undefined) {
+      voteIteration = <number> (<Vote> game.getVote()).getIteration();
+    }
+
+    // During voting, narrator always needs the latest game data. Thus; IFF subState = DAYTIME_VOTING, set narrator iteration = server iteration - 1
+    // Thus always triggering a data update.
+    let iteration = game.getIteration();
+    if (game.getSubState() === SubState.DAYTIME_VOTING && player.getRole() === GameRole.NARRATOR) {
+      // It might happen that the Host fetches JUST before the vote has begun. In this case, also let him fetch.
+      if (game.getVote() === undefined) {
+        iteration --;
+      } else if ((<Vote> game.getVote()).getPlayersThatStillHaveToVote().length == 0) {
+        // All players have voted; no continuous data fetching needed. This is last fetch.
+      } else {
+        // Not all players have voted, keep on fetching.
+        iteration--;
+      }
+    }
+
     const generalGameData: any = {
       "status": "success",
+      "gameState": game.getState(),
       "gameToken": game.getToken().getToken(),
       "playerToken": player.getToken().getToken(),
       "host": game.getHost(),
-      "iteration": game.getIteration(),
+      "iteration": iteration,
       "started": !game.playerCanJoin(),
       "finished": game.isFinished(),
       "winningRole": game.getWinningRole(),
@@ -57,7 +80,8 @@ export class GameData {
       "role": player.getRole(),
       "roleDescription": player.getRole() + " role description",
       "alive": player.isAlive(),
-      "substate": game.getSubState()
+      "substate": game.getSubState(),
+      "voteIteration": voteIteration
     };
     return GameData.addPlayerSpecificData(game, player, generalGameData);
 
@@ -74,7 +98,24 @@ export class GameData {
         rolesStillNeededInNight = (<Night> game.getNight()).rolesThatStillHaveToPerform();
         playersKilledInNight = (<Night> game.getNight()).getKilledPlayers().map(player => player.getName());
       }
-      const playerSpecificData = { "rolesStillInNight": rolesStillNeededInNight, "playersKilledInNight": playersKilledInNight};
+
+      let playersStillNeedingToVote: string[] = [];
+      let voteWinner = "Undecided";
+
+      // Next: Voting data
+      if (game.getVote() != undefined) {
+        playersStillNeedingToVote = (<Vote> game.getVote()).getPlayerNamesThatStillHaveToVote();
+        const voteWinnerInGame = (<Vote> game.getVote()).getWinner();
+        if (voteWinnerInGame != undefined) {
+          voteWinner = PlayerManager.get().getByToken(voteWinnerInGame).getName();
+        } else if ((<Vote> game.getVote()).isTie()) {
+          voteWinner = "Tied";
+        }
+
+      }
+
+      const playerSpecificData = { "rolesStillInNight": rolesStillNeededInNight, "playersKilledInNight": playersKilledInNight,
+        "playersStillNeedingToVote": playersStillNeedingToVote, "voteWinner": voteWinner};
       return {...currentData, ...playerSpecificData};
     }
     return currentData;

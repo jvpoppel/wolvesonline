@@ -15,6 +15,8 @@ import {Validation} from "./api/Validation";
 import {AuthResponse} from "./api/responses/AuthResponse";
 import {AuthValidator} from "./api/validators/AuthValidator";
 import {apiNightAction} from "./api/APINightAction";
+import {APIVoting} from "./api/APIVoting";
+import {InternalAPIReturns} from "./api/responses/InternalAPIReturns";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const winston = require("winston");
@@ -93,7 +95,7 @@ app.post("/api/game/join", function(req, res) {
 
   const gameResponse = apiJoinGame(req.body.gameToken, req.body.playerName);
   if (gameResponse == undefined) {
-    res.status(400).send("Could not join game.");
+    res.status(400).send(JSON.stringify({"status": "failed"}));
   } else {
     res.status(200).send(gameResponse); // Return player token
   }
@@ -273,6 +275,112 @@ app.put("/api/game/:gametoken/start", function(req, res) {
   if (response === "unauthorized") {
     res.status(401).send(JSON.stringify({"status": "failed"}));
   } else if (response === "failed") {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
+  }
+});
+
+
+/*
+
+            VOTING ENDPOINTS
+
+ */
+/*
+  PUT vote
+    See spefication of APIVoting class for details
+ */
+app.put("/api/game/:gametoken/:playertoken/vote", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to reset vote in game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  let authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+  authValidation = new AuthResponse(AuthValidator.ValidateGame(req.params.gametoken)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
+  const response: any = APIVoting("PUT", req.params.gametoken, req.params.playertoken);
+  if (response.status === InternalAPIReturns.UNAUTHORIZED) {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response.status === InternalAPIReturns.FAILED) {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).send(JSON.stringify({"status": "success"}));
+  }
+});
+
+/*
+  POST vote
+    See spefication of APIVoting class for details
+ */
+app.post("/api/game/:gametoken/:playertoken/vote", function(req, res) {
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  let authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+  authValidation = new AuthResponse(AuthValidator.ValidateGame(req.params.gametoken)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+  let response: any;
+  if (req.body.onPlayer !== undefined) {
+    logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to POST vote in game " + req.params.gametoken);
+    response = APIVoting("POST", req.params.gametoken, req.params.playertoken, req.body.onPlayer);
+  } else {
+    response = APIVoting("GET", req.params.gametoken, req.params.playertoken);
+  }
+  if (response.status === InternalAPIReturns.UNAUTHORIZED) {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response.status === InternalAPIReturns.FAILED) {
+    res.status(400).send(JSON.stringify({"status": "failed"}));
+  } else {
+    res.status(200).json(response);
+  }
+});
+
+/*
+  PUT vote Finish
+      See implementation class for specifications
+ */
+app.put("/api/game/:gametoken/:playertoken/vote/finish", function(req, res) {
+  logger.info("[EXPRESS] Player " + req.params.playertoken + " attempts to finish vote in game " + req.params.gametoken);
+  const paramsValidation: Validation | undefined = validateParams(req.params.playertoken, req.params.gametoken, req.body.uuid).body();
+  if (paramsValidation !== undefined) {
+    res.status(paramsValidation.status).send(JSON.stringify(paramsValidation));
+    return;
+  }
+  let authValidation: Validation = new AuthResponse(AuthValidator.ValidatePlayer(req.params.playertoken, req.body.uuid)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+  authValidation = new AuthResponse(AuthValidator.ValidateGame(req.params.gametoken)).body();
+  if (authValidation.status != 200) {
+    res.status(authValidation.status).send(JSON.stringify(authValidation));
+    return;
+  }
+
+  const response: any = APIVoting("FINISH", req.params.gametoken, req.params.playertoken);
+  if (response.status === InternalAPIReturns.UNAUTHORIZED) {
+    res.status(401).send(JSON.stringify({"status": "failed"}));
+  } else if (response.status === InternalAPIReturns.FAILED) {
     res.status(400).send(JSON.stringify({"status": "failed"}));
   } else {
     res.status(200).send(JSON.stringify({"status": "success"}));

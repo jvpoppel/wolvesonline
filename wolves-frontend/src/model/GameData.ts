@@ -1,5 +1,6 @@
 export interface GameData {
   status: string,
+  gameState?: string,
   gameToken?: string,
   playerToken?: string,
   host?: string,
@@ -15,6 +16,9 @@ export interface GameData {
   roleDescription?: string,
   alive?: boolean,
   substate?: string,
+  voteIteration?: number,
   rolesStillInNight?: string[],
-  playersKilledInNight?: string[]
+  playersKilledInNight?: string[],
+  playersStillNeedingToVote?: string[],
+  voteWinner?: string
 }

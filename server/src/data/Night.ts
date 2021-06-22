@@ -7,7 +7,7 @@ export class Night {
   private killedPlayers: Player[];
 
   constructor(rolesInNight: GameRole[]) {
-    this.rolesInNight = rolesInNight;
+    this.rolesInNight = Array.from(rolesInNight);
     if (this.rolesInNight.indexOf(GameRole.CIVILIAN) > 0) {
       this.rolesInNight.splice(this.rolesInNight.indexOf(GameRole.CIVILIAN), 1);
     }

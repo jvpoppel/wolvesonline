@@ -4,7 +4,6 @@ import {TokenManager} from "../manager/TokenManager";
 import {GameToken} from "../model/GameToken";
 import {getLogger} from "../endpoint";
 import {Director} from "../manager/Director";
-import {GameManager} from "../manager/GameManager";
 
 export function apiDisconnectPlayer(playerToken: string, gameToken: string): string {
   const resolvedPlayer: PlayerToken | NullToken = TokenManager.get().getFromString(playerToken);
@@ -12,11 +11,6 @@ export function apiDisconnectPlayer(playerToken: string, gameToken: string): str
 
   if (resolvedPlayer.isNullToken() || resolvedGame.isNullToken()) {
     getLogger().debug("[apiDisconnectPlayer] One of the provided tokens was Null");
-    return "failed";
-  }
-
-  if (!GameManager.get().getByToken(resolvedGame).playerCanJoin()) {
-    getLogger().debug("[apiDisconnectPlayer] Could not disconnect; game has already been started.");
     return "failed";
   }
 

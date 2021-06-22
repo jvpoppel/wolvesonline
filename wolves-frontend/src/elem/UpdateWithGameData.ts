@@ -6,6 +6,7 @@ import {LocalStorage} from "../data/LocalStorage";
 import {DisplayManager} from "./DisplayManager";
 import {KickPlayerFromGameAPI} from "../api/KickPlayerFromGameAPI";
 import {SubState} from "../model/SubState";
+import {ProcessVote} from "./ProcessVote";
 
 export class UpdateWithGameData {
   public static perform(data: GameData): void {
@@ -38,6 +39,14 @@ export class UpdateWithGameData {
       WebElements.PLAYER_LIST_BODY_HOST().innerHTML = htmlToAdd;
     } else {
       WebElements.PLAYER_LIST_BODY_PLAYER().innerHTML = htmlToAdd;
+    }
+
+    // Before loading anything else; check if game finished!
+    if (data.finished) {
+      WebElements.WINNER_ROW().style.display = "";
+      WebElements.WINNER_VALUE().innerHTML = data.winningRole;
+    } else {
+      WebElements.WINNER_ROW().style.display = "none";
     }
 
     // Add listeners to created kick-buttons if player is host and game has not been started yet.
@@ -84,13 +93,19 @@ export class UpdateWithGameData {
 
       WebElements.START_NIGHT_ROW().style.display = "";
     } else {
-      WebElements.START_NIGHT_ROW().style.display = "None";
+      WebElements.START_NIGHT_ROW().style.display = "none";
+    }
+
+    // When night begins, always reset voting results table
+    if (data.substate === SubState.NIGHTTIME_SELECTION.valueOf()) {
+      WebElements.VOTE_RESULTS_ROW().style.display = "none";
+      WebElements.VOTE_RESULTS_CONTENT().innerHTML = "";
     }
 
     /*
     After that, check if game is in Night and update the game for the narrator accordingly
      */
-    if (data.substate === "Night" && data.role === "Narrator") {
+    if (data.substate === SubState.NIGHTTIME_SELECTION.valueOf() && data.role === "Narrator") {
       DisplayManager.ShowNightControls();
       const rolesStillForNight = Array.from(data.rolesStillInNight);
       const playersKilledInNight = Array.from(data.playersKilledInNight);
@@ -118,7 +133,6 @@ export class UpdateWithGameData {
       // Make list of which buttons to hide and remove the ones that have to stay.
       const showButtons: string[] = ["Wolf", "Medium"];
       rolesStillForNight.forEach(function(role) {
-        console.log("Role still in night checked: " + role);
         if (role === "Wolf") {
           showButtons.splice(showButtons.indexOf("Wolf"), 1);
         } else if (role === "Medium") {
@@ -136,6 +150,11 @@ export class UpdateWithGameData {
       DisplayManager.HideNightControls();
       DisplayManager.ResetNightControls();
     }
+
+    /*
+      Voting
+     */
+    ProcessVote.perform(data, playerTokensAsList, playerNamesAsList, playerRolesAsList, playersAliveAsList);
   }
 }
 

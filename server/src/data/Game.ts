@@ -7,6 +7,10 @@ import {GameRole} from "../model/GameRole";
 import {Night} from "./Night";
 import {Director} from "../manager/Director";
 import {TSMap} from "typescript-map";
+import {Vote} from "./Vote";
+import {PlayerToken} from "../model/PlayerToken";
+import {PlayerManager} from "../manager/PlayerManager";
+import {getLogger} from "../endpoint";
 
 enum GameState {
   OPEN_WAITFORPLAYERS = "OPEN_WAITFORPLAYERS",
@@ -21,17 +25,20 @@ export class Game {
   private state: GameState;
   private iteration: number;
   private host: Player | undefined;
-  private players: Array<Player>;
+  private narrator: Player | undefined;
+  private players: Player[];
   private substate: SubState;
   private rolesInGame: GameRole[];
   private currentNight: Night | undefined;
   private winningRole: GameRole;
+  private currentVote: Vote | undefined;
 
   constructor() {
     this.state = GameState.OPEN_WAITFORPLAYERS;
     this.token = TokenBuilder.nullToken();
     this.iteration = 0;
     this.host = undefined;
+    this.narrator = undefined;
     this.players = [];
     this.substate = SubState.DAYTIME_FIRST;
     this.rolesInGame = [];
@@ -70,6 +77,10 @@ export class Game {
 
   public getIteration(): number {
     return this.iteration;
+  }
+
+  public getNarrator(): Player | undefined {
+    return this.narrator;
   }
 
   public getNight(): Night | undefined {
@@ -113,6 +124,11 @@ export class Game {
     return this;
   }
 
+  public setNarrator(narrator: Player): Game {
+    this.narrator = narrator;
+    return this;
+  }
+
   public setToken(token: GameToken): Game {
     this.token = token;
     return this;
@@ -121,7 +137,13 @@ export class Game {
   public start(): boolean {
     if (this.state != GameState.OPEN_WAITFORPLAYERS) {
       return false;
+    } else if (this.narrator === undefined) {
+      return false; // Narrator has to be defined.
     }
+    // TODO: REMOVE BELOW DEBUG PRINT
+    getLogger().debug("GAME: Starting. Printing all roles in game...");
+    this.rolesInGame.forEach(role => getLogger().debug("GAME: " + role.valueOf() + " in game"));
+
     this.state = GameState.OPEN_INPROGRESS;
     this.substate = SubState.DAYTIME_FIRST;
     this.increaseIteration();
@@ -140,6 +162,12 @@ export class Game {
     if (this.substate != SubState.DAYTIME_FIRST && this.substate != SubState.DAYTIME_POSTVOTE && this.substate != SubState.DAYTIME_GAMEFINISHED) {
       return false;
     }
+    // If game finished, don't start night
+    if (this.state === GameState.RESOLVED_FINALIZE || this.state === GameState.RESOLVED_WAITFORTOKENRELEASE) {
+      return false;
+    }
+    // Remove vote
+    this.currentVote = undefined;
     this.substate = SubState.NIGHTTIME_SELECTION;
     this.currentNight = new Night(this.rolesInGame);
     this.increaseIteration();
@@ -155,18 +183,29 @@ export class Game {
     // Night is really finished; perform kills, remove night from memory and set subState to morning
     this.performKills(this.currentNight.getKilledPlayers());
     this.currentNight = undefined;
-    this.substate = SubState.DAYTIME_VOTING;
 
     // At the end of the night, check win conditions.
     this.checkWinConditions();
 
-    this.increaseIteration();
+    if (this.isFinished()) {
+      getLogger().info("GAME: Finished");
+      this.increaseIteration();
+    } else {
+      getLogger().info("GAME: Starting vote now");
+      this.startVote();
+      this.substate = SubState.DAYTIME_VOTING;
+    }
     return true;
   }
 
   public checkWinConditions(): void {
+    // TODO: REMOVE BELOW DEBUG PRINT
+    getLogger().debug("GAME: Check Win Conditions. Printing all roles in game...");
+    this.rolesInGame.forEach(role => getLogger().debug("GAME: " + role.valueOf() + " still in game"));
+
     if (this.rolesInGame.indexOf(GameRole.WOLF) < 0) {
       // No wolves in game? Civilians have won!
+      getLogger().info("GAME: Finished because there are no wolves in the game!");
       this.finish(GameRole.CIVILIAN);
       return;
     }
@@ -174,10 +213,11 @@ export class Game {
     if (this.rolesInGame.length > 1) {
       // More than 1 role in game (thus, at least one Non-Wolf player is in game). Game is not finished.
       // Do nothing.
-
+      getLogger().info("GAME: Not finished as there is more than 1 active role in the game");
     } else {
       // With the first if-statement we know there is at least one wolf in game, this else is only reached if there
       // is exactly one role still in game, thus only wolves are left. Wolves have won.
+      getLogger().info("GAME: Finished because there are only wolves left in the game!");
       this.finish(GameRole.WOLF);
     }
   }
@@ -188,7 +228,7 @@ export class Game {
    */
   public performKills(killedPlayers: Player[]): void {
     const killedRoles: GameRole[] = [];
-    const currentRolesInGame = this.rolesInGame;
+    const currentRolesInGame = Array.from(this.rolesInGame);
     killedPlayers.forEach(function(player) {
       player.setDead();
       killedRoles.push(player.getRole());
@@ -199,6 +239,7 @@ export class Game {
         if (currentRolesInGame.indexOf(role) >= 0) {
           // Above check is neccesary, as multiple players of one role might have died.
           // We only check alive players in game after all killings, thus check is necessary.
+          getLogger().info("GAME: PerformKills: Remove role " + role.valueOf() + " as there are no players alive with this role.");
           currentRolesInGame.splice(currentRolesInGame.indexOf(role), 1);
         }
       }
@@ -214,6 +255,8 @@ export class Game {
   public finish(winningRole: GameRole): Game {
     this.state = GameState.RESOLVED_FINALIZE;
     this.winningRole = winningRole;
+    this.substate = SubState.GAME_FINISHED;
+    this.increaseIteration();
     return this;
   }
 
@@ -225,14 +268,82 @@ export class Game {
     return this.winningRole;
   }
 
-  public finishVote(playerToKill: Player): boolean {
+  private getAlivePlayers(): Player[] {
+    const alivePlayers: Player[] = [];
+    this.players.forEach(player => { if (player.isAlive()) { alivePlayers.push(player);} else { getLogger().debug("GAME: Player " + player.getName() + " not alive?");}});
+    return alivePlayers;
+  }
+
+  /**
+   * Only to be used when resetting the vote
+   */
+  public setSubStateToVoting(): void {
+    this.substate = SubState.DAYTIME_VOTING;
+  }
+
+  /**
+   * Returns true iff no vote has been started
+   */
+  public startVote(): boolean {
+    if (this.currentVote !== undefined) {
+      getLogger().info("GAME: Could not start vote; already in progress.");
+      return false; // Vote already in progress
+    }
+
+    // If game finished, don't start vote
+    if (this.state === GameState.RESOLVED_FINALIZE || this.state === GameState.RESOLVED_WAITFORTOKENRELEASE) {
+      return false;
+    }
+
+    getLogger().info("GAME: Vote started.");
+    this.currentVote = new Vote(this, Array.from(this.getAlivePlayers()).map(player => player.getToken()), (<Player> this.narrator).getToken());
+    this.increaseIteration();
+    return true;
+  }
+
+  public getVote(): Vote | undefined {
+    return this.currentVote;
+  }
+
+  /* Update SubState and update iteration */
+  public voteHasReachedTie() {
+    this.substate = SubState.DAYTIME_TIEDVOTE;
+    this.increaseIteration();
+  }
+
+  public finishVote(): boolean {
     if (this.substate != SubState.DAYTIME_VOTING) {
       return false;
     }
-    this.performKills([playerToKill]);
+    if (this.currentVote === undefined) {
+      return false;
+    }
+
+    if (!this.currentVote.hasFinished()) {
+      return false;
+    }
+
+    this.performKills([PlayerManager.get().getByToken(<PlayerToken> this.currentVote.getWinner())]);
     this.checkWinConditions();
     this.substate = SubState.DAYTIME_POSTVOTE;
     this.increaseIteration();
     return true;
+  }
+
+  /**
+   * To be called on game deletion; resets all data to begin values
+   * I.e. removes all references to other data
+   */
+  public cleanup(): Game {
+
+    this.token = TokenBuilder.nullToken();
+    this.host = undefined;
+    this.narrator = undefined;
+    this.players = [];
+    this.rolesInGame = [];
+    this.currentNight = undefined;
+
+    return this;
+
   }
 }

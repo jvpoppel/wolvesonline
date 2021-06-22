@@ -103,6 +103,13 @@ export class Director {
       getLogger().debug("[Director] Could not kick player " + playerToken.getToken() + " from game " + gameToken.getToken() + ": Player not in game.");
       return undefined;
     }
+
+    // Special case: Game finished.
+    // In this case, only return 'True', as end screen has to be intact for remaining players
+    if (GameManager.get().getByToken(gameToken).isFinished()) {
+      return true;
+    }
+
     if (!GameManager.get().getByToken(gameToken).playerCanJoin()) {
       getLogger().debug("[Director] Could not kick player " + playerToken.getToken() + " from game " + gameToken.getToken() + ": Game already started!");
       return undefined;
@@ -195,6 +202,9 @@ export class Director {
       if (player.getToken().getToken() === narrator.getToken()) {
         getLogger().debug("[Director] Given role NARRATOR to player " + player.getToken().getToken());
         player.setRole(GameRole.NARRATOR);
+
+        // Also define Narrator for game
+        game.setNarrator(player);
         return;
       }
       if (amountOfWolves > 0) {
@@ -242,10 +252,13 @@ export class Director {
     const resolvedPlayerToken: Token = TokenManager.get().getFromString(playerToken);
     if (!(resolvedGameToken.isGameToken() && resolvedPlayerToken.isPlayerToken())) {
       return "failed";
-    } else if (PlayerManager.get().getByToken(<PlayerToken> resolvedPlayerToken).getRole() != GameRole.NARRATOR) {
-      return "unauthorized";
     }
     const game: Game = GameManager.get().getByToken(resolvedGameToken);
+
+    // Only narrator can perform these actions
+    if (<PlayerToken> resolvedPlayerToken !== (<Player> game.getNarrator()).getToken()) {
+      return "unauthorized";
+    }
     if (action === "start") {
       if (game.startNight()) {
         return "OK";

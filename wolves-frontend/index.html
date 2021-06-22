@@ -124,6 +124,25 @@
             <div class="col-md-3"></div>
             <hr>
           </div>
+          <div id="row-win" style="display: none">
+            <div class="row">
+              <div class="col-md-3"></div>
+              <div class="col-md-6 text-center">
+                <h2>Winners: </h2><h2 id="winningRole"></h2>
+              </div>
+              <div class="col-md-3"></div>
+              <hr>
+            </div>
+            <div class="row">
+              <div class="col-md-3"></div>
+              <div class="col-md-6 text-center">
+                <button class="btn btn-danger" id="disconnectWin">Disconnect</button>
+              </div>
+              <div class="col-md-3"></div>
+              <hr>
+            </div>
+          </div>
+
           <div class="row" id="row-night-role-selection" style="display: none">
             <div class="col-md-1"></div>
             <div class="col-md-10 text-center">
@@ -154,24 +173,56 @@
             </div>
             <div class="col-md-1"></div>
           </div>
-          <!-- Player row: Voting process -->
-          <div id="row-vote" style="display: none">
+          <!-- Game row: Voting results table -->
+          <div id="row-vote-results" style="display: none">
             <div class="row">
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Voted on</th>
+                </tr>
+                </thead>
+                <tbody id="vote-result-table-content">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Player row: Voting process -->
+          <div id="row-vote-players" style="display: none">
+            <div class="row text-center">
               <div class="col-md-3"></div>
               <div class="col-md-6">
-                <select id="voteList">
-                  <option>a</option>
-                  <option>b</option>
-                </select>
+                <label for="vote-list">Who are you voting on? </label><select id="vote-list"></select>
               </div>
               <div class="col-md-3"></div>
             </div>
             <div class="row">
               <div class="col-md-2"></div>
               <div class="col-md-8">
-                <button class="btn btn-outline-primary btn-block" id="lockVote">Lock vote</button>
+                <button class="btn btn-outline-primary btn-block" id="vote-lock">Lock vote</button>
               </div>
               <div class="col-md-2"></div>
+            </div>
+          </div>
+          <!-- Narrator row: Voting process -->
+          <div id="row-vote-narrator" style="display: none">
+            <div class="row text-center">
+              <div class="col-md-12">
+                <span>Vote result: </span><span id="vote-result-narrator"></span>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col-md-12">
+                <span>Players that still have to vote: </span><span id="players-that-have-to-vote"></span>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col-md-12">
+                <button class="btn btn-primary" id="vote-reset" style="display: none">Reset vote</button>
+                <button class="btn btn-primary" id="vote-finish" style="display: none">Finish vote</button>
+              </div>
             </div>
           </div>
           <!-- Narrator row: Start night -->
@@ -182,7 +233,8 @@
             </div>
             <div class="col-md-3"></div>
           </div>
-        </div>
+          </div>
+      </div>
         <footer id="footer">
           <div class="container">
             <div class="row">
@@ -200,7 +252,6 @@
           </div>
         </footer>
       </div>
-    </div>
 
     <!-- Modal: Role Information -->
     <div id="roleModal" class="modal fade" role="dialog">
