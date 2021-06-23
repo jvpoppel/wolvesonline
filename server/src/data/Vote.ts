@@ -24,13 +24,13 @@ export class Vote {
     this.voteIteration = 0;
 
     this.votingPlayers = Array.from(players);
-    // Remove narrator from voting players
-    this.votingPlayers.splice(this.votingPlayers.indexOf(narrator), 1);
-    this.playersThatStillHaveToVote = Array.from(this.votingPlayers);
 
-    // TODO: REMOVE BELOW DEBUG CODE!!!
-    getLogger().debug("Vote: Printing all players that still have to vote: ");
-    this.playersThatStillHaveToVote.forEach(player => getLogger().debug("Vote: " + player.getToken()));
+    // If narrator is included in voting players, remove.
+    if (this.votingPlayers.indexOf(narrator) >= 0) {
+      this.votingPlayers.splice(this.votingPlayers.indexOf(narrator), 1);
+    }
+
+    this.playersThatStillHaveToVote = Array.from(this.votingPlayers);
 
     this.playersVoted = [];
     this.votesPerPlayer = new TSMap<PlayerToken, number>();
@@ -54,9 +54,6 @@ export class Vote {
 
   public processVote(fromPlayer: PlayerToken, onPlayer: PlayerToken): boolean {
     if (this.playersThatStillHaveToVote.indexOf(fromPlayer) < 0) {
-      getLogger().debug("Vote: Player " + fromPlayer.getToken() + " has already voted! (Index " + this.playersThatStillHaveToVote.indexOf(fromPlayer) + ")");
-      getLogger().debug("Vote: Printing all players that still have to vote: ");
-      this.playersThatStillHaveToVote.forEach(player => getLogger().debug("Vote: " + player.getToken()));
       return false; // Player has already voted
     }
     this.playersVoted.push(fromPlayer);

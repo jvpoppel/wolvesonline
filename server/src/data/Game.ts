@@ -140,9 +140,6 @@ export class Game {
     } else if (this.narrator === undefined) {
       return false; // Narrator has to be defined.
     }
-    // TODO: REMOVE BELOW DEBUG PRINT
-    getLogger().debug("GAME: Starting. Printing all roles in game...");
-    this.rolesInGame.forEach(role => getLogger().debug("GAME: " + role.valueOf() + " in game"));
 
     this.state = GameState.OPEN_INPROGRESS;
     this.substate = SubState.DAYTIME_FIRST;
@@ -188,10 +185,8 @@ export class Game {
     this.checkWinConditions();
 
     if (this.isFinished()) {
-      getLogger().info("GAME: Finished");
       this.increaseIteration();
     } else {
-      getLogger().info("GAME: Starting vote now");
       this.startVote();
       this.substate = SubState.DAYTIME_VOTING;
     }
@@ -199,13 +194,9 @@ export class Game {
   }
 
   public checkWinConditions(): void {
-    // TODO: REMOVE BELOW DEBUG PRINT
-    getLogger().debug("GAME: Check Win Conditions. Printing all roles in game...");
-    this.rolesInGame.forEach(role => getLogger().debug("GAME: " + role.valueOf() + " still in game"));
 
     if (this.rolesInGame.indexOf(GameRole.WOLF) < 0) {
       // No wolves in game? Civilians have won!
-      getLogger().info("GAME: Finished because there are no wolves in the game!");
       this.finish(GameRole.CIVILIAN);
       return;
     }
@@ -213,11 +204,9 @@ export class Game {
     if (this.rolesInGame.length > 1) {
       // More than 1 role in game (thus, at least one Non-Wolf player is in game). Game is not finished.
       // Do nothing.
-      getLogger().info("GAME: Not finished as there is more than 1 active role in the game");
     } else {
       // With the first if-statement we know there is at least one wolf in game, this else is only reached if there
       // is exactly one role still in game, thus only wolves are left. Wolves have won.
-      getLogger().info("GAME: Finished because there are only wolves left in the game!");
       this.finish(GameRole.WOLF);
     }
   }
@@ -239,7 +228,6 @@ export class Game {
         if (currentRolesInGame.indexOf(role) >= 0) {
           // Above check is neccesary, as multiple players of one role might have died.
           // We only check alive players in game after all killings, thus check is necessary.
-          getLogger().info("GAME: PerformKills: Remove role " + role.valueOf() + " as there are no players alive with this role.");
           currentRolesInGame.splice(currentRolesInGame.indexOf(role), 1);
         }
       }
@@ -270,7 +258,9 @@ export class Game {
 
   private getAlivePlayers(): Player[] {
     const alivePlayers: Player[] = [];
-    this.players.forEach(player => { if (player.isAlive()) { alivePlayers.push(player);} else { getLogger().debug("GAME: Player " + player.getName() + " not alive?");}});
+    this.players.forEach(player => { if (player.isAlive()) {
+      alivePlayers.push(player);
+    }});
     return alivePlayers;
   }
 
@@ -286,7 +276,6 @@ export class Game {
    */
   public startVote(): boolean {
     if (this.currentVote !== undefined) {
-      getLogger().info("GAME: Could not start vote; already in progress.");
       return false; // Vote already in progress
     }
 
@@ -295,7 +284,6 @@ export class Game {
       return false;
     }
 
-    getLogger().info("GAME: Vote started.");
     this.currentVote = new Vote(this, Array.from(this.getAlivePlayers()).map(player => player.getToken()), (<Player> this.narrator).getToken());
     this.increaseIteration();
     return true;
