@@ -20,5 +20,7 @@ export interface GameData {
   rolesStillInNight?: string[],
   playersKilledInNight?: string[],
   playersStillNeedingToVote?: string[],
-  voteWinner?: string
+  voteWinner?: string,
+  playerNameChecked?: string,
+  playerRoleChecked?: string
 }

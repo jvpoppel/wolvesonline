@@ -89,7 +89,7 @@ export class GameData {
   }
 
   public static addPlayerSpecificData(game: Game, player: Player, currentData: any): any {
-    // Only needed for narrator at this moment.
+    // Narrator-specific data
     if (player.getRole() === GameRole.NARRATOR) {
       // Add night-specific data. Thus; roles still needed to perform and players currently killed in night.
       let rolesStillNeededInNight: GameRole[] = [];
@@ -117,6 +117,30 @@ export class GameData {
       const playerSpecificData = { "rolesStillInNight": rolesStillNeededInNight, "playersKilledInNight": playersKilledInNight,
         "playersStillNeedingToVote": playersStillNeedingToVote, "voteWinner": voteWinner};
       return {...currentData, ...playerSpecificData};
+    }
+
+    // Medium-specific data
+    if (player.getRole() === GameRole.MEDIUM) {
+      // First check if there is a night, otherwise return currentData.
+      const night : undefined | Night = game.getNight();
+      if (night === undefined) {
+        return currentData;
+      }
+      // We now know there is actually a night in the game.
+
+      // Note: Below if-statement does NOT contain Medium, but wolves as it only returns the choice of a medium
+      // Thus, always being outside of state NIGHTTIME_MEDIUM.
+      if (game.getSubState() === SubState.NIGHTTIME_SELECTION || game.getSubState() === SubState.NIGHTTIME_WOLVES) {
+        // IFF medium has performed their action, always return result.
+        // First, check if medium checked a player.
+        if (night.getPlayerMediumChecked() !== undefined) {
+          // Medium checked a player, add this key and return
+          const playerChecked = <Player> night.getPlayerMediumChecked();
+          const playerSpecificData = { "playerNameChecked": playerChecked.getName(),
+            "playerRoleChecked": playerChecked.getRole() };
+          return {...currentData, ...playerSpecificData};
+        }
+      }
     }
     return currentData;
   }

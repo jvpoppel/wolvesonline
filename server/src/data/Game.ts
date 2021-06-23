@@ -26,6 +26,7 @@ export class Game {
   private iteration: number;
   private host: Player | undefined;
   private narrator: Player | undefined;
+  private medium: Player | undefined;
   private players: Player[];
   private substate: SubState;
   private rolesInGame: GameRole[];
@@ -39,6 +40,7 @@ export class Game {
     this.iteration = 0;
     this.host = undefined;
     this.narrator = undefined;
+    this.medium = undefined;
     this.players = [];
     this.substate = SubState.DAYTIME_FIRST;
     this.rolesInGame = [];
@@ -87,6 +89,10 @@ export class Game {
     return this.currentNight;
   }
 
+  public getMedium(): Player | undefined {
+    return this.medium;
+  }
+
   public getToken(): GameToken {
     return this.token;
   }
@@ -126,6 +132,11 @@ export class Game {
 
   public setNarrator(narrator: Player): Game {
     this.narrator = narrator;
+    return this;
+  }
+
+  public setMedium(medium: Player): Game {
+    this.medium = medium;
     return this;
   }
 
@@ -270,6 +281,21 @@ export class Game {
   public setSubStateToVoting(): void {
     this.substate = SubState.DAYTIME_VOTING;
   }
+
+  /**
+   * Only to be used from Director when receiving Medium night action
+   */
+  public setSubStateToMedium(): void {
+    this.substate = SubState.NIGHTTIME_MEDIUM;
+  }
+
+  /**
+   * Only to be used from Night, when i.e. the medium decided on which player they want to check
+   */
+  public setSubStateToNightSelection(): void {
+    this.substate = SubState.NIGHTTIME_SELECTION;
+  }
+
 
   /**
    * Returns true iff no vote has been started

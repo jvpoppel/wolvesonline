@@ -298,6 +298,7 @@ export class Director {
       }
     } else if (action === "medium") {
       if (night.letRolePerform(GameRole.MEDIUM)) {
+        game.setSubStateToMedium();
         game.increaseIteration();
         return "OK";
       } else {

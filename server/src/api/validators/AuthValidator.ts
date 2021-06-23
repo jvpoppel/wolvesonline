@@ -7,7 +7,8 @@ import {Director} from "../../manager/Director";
 import {getLogger} from "../../endpoint";
 
 export class AuthValidator {
-  public static ValidatePlayer(playerToken: string, uuid: string): AuthErrorResponse | AuthSuccessResponse {
+  // Checks if player provided correct UUID && is in given game
+  public static ValidatePlayer(playerToken: string, uuid: string, gameToken: string): AuthErrorResponse | AuthSuccessResponse {
 
     const supposedPlayer: PlayerToken | NullToken = TokenManager.get().getFromString(playerToken);
 
@@ -19,6 +20,10 @@ export class AuthValidator {
       getLogger().debug("[AuthValidator] UUID did not match for player " + supposedPlayer.getToken());
       return AuthErrorResponse.WRONG_UUID;
     }
+    if (!Director.get().checkIfPlayerInGame((<PlayerToken> supposedPlayer), TokenManager.get().getFromString(gameToken))) {
+      getLogger().debug("[AuthValidator] Player " + supposedPlayer.getToken() + " not in game " + gameToken);
+      return AuthErrorResponse.NOT_IN_GAME;
+    }
     return new AuthSuccessResponse();
   }
 
@@ -26,13 +31,6 @@ export class AuthValidator {
     const supposedGame: GameToken | NullToken = TokenManager.get().getFromString(gameToken);
     if (supposedGame.isNullToken()) {
       return AuthErrorResponse.UNKNOWN_TOKEN;
-    }
-    return new AuthSuccessResponse();
-  }
-
-  public static ValidatePlayerInGame(gameToken: GameToken, playerToken: PlayerToken): AuthErrorResponse | AuthSuccessResponse {
-    if (Director.get().checkIfPlayerInGame(playerToken, gameToken) === undefined) {
-      return AuthErrorResponse.NOT_IN_GAME;
     }
     return new AuthSuccessResponse();
   }

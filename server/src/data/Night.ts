@@ -5,8 +5,10 @@ export class Night {
 
   private rolesInNight: GameRole[];
   private killedPlayers: Player[];
+  private playerMediumChecked: Player | undefined;
 
   constructor(rolesInNight: GameRole[]) {
+    this.playerMediumChecked = undefined;
     this.rolesInNight = Array.from(rolesInNight);
     if (this.rolesInNight.indexOf(GameRole.CIVILIAN) > 0) {
       this.rolesInNight.splice(this.rolesInNight.indexOf(GameRole.CIVILIAN), 1);
@@ -20,6 +22,14 @@ export class Night {
 
   public getKilledPlayers(): Player[] {
     return this.killedPlayers;
+  }
+
+  public getPlayerMediumChecked(): Player | undefined {
+    return this.playerMediumChecked;
+  }
+
+  public setPlayerMediumChecked(player: Player): void {
+    this.playerMediumChecked = player;
   }
 
   public rolesThatStillHaveToPerform(): GameRole[] {
