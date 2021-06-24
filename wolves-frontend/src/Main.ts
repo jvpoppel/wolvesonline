@@ -11,6 +11,7 @@ import {NightApi} from "./api/NightApi";
 import {ResetVoteApi} from "./api/ResetVoteApi";
 import {FinishVoteApi} from "./api/FinishVoteApi";
 import {VoteOnPlayerApi} from "./api/VoteOnPlayerApi";
+import {MediumApi} from "./api/MediumApi";
 
 $(() => {
   new Main();
@@ -132,6 +133,11 @@ export class Main {
     });
   }
 
+  public async performMediumSubmitApi(): Promise<void> {
+    await MediumApi.send(LocalStorage.gameToken(), LocalStorage.playerToken(), LocalStorage.uuid(),
+      (<HTMLSelectElement> WebElements.MEDIUM_SELECTION()).value);
+  }
+
   private setupBaseEventListeners(): void {
     WebElements.CREATE_GAME().addEventListener("click", () => this.performCreateGameApi());
     WebElements.JOIN_BUTTON().addEventListener("click", () => this.performJoinGameApi());
@@ -146,6 +152,7 @@ export class Main {
     WebElements.LOCK_VOTE().addEventListener("click", () => this.performVoteOnPlayerApi());
     WebElements.RESET_VOTE().addEventListener("click", () => this.performResetVoteApi());
     WebElements.FINISH_VOTE().addEventListener("click", () => this.performFinishVoteApi());
+    WebElements.MEDIUM_SUBMIT().addEventListener("click", () => this.performMediumSubmitApi());
   }
 
 }

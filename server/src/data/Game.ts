@@ -294,6 +294,7 @@ export class Game {
    */
   public setSubStateToNightSelection(): void {
     this.substate = SubState.NIGHTTIME_SELECTION;
+    this.increaseIteration();
   }
 
 

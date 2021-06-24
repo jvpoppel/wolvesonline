@@ -38,9 +38,13 @@ export class WebElements {
   public static FINISH_NIGHT(): HTMLElement { return document.getElementById("finishNight");}
   public static WOLVES_NIGHT(): HTMLElement { return document.getElementById("werewolves-night");}
   public static MEDIUM_NIGHT(): HTMLElement { return document.getElementById("medium-night");}
+  public static MEDIUM_ROW(): HTMLElement { return document.getElementById("row-night-medium");}
   public static MEDIUM_PRE_SELECT(): HTMLElement { return document.getElementById("medium-pre-select"); }
   public static MEDIUM_POST_SELECT(): HTMLElement { return document.getElementById("medium-post-select"); }
   public static MEDIUM_SELECTION(): HTMLElement { return document.getElementById("medium-selection");}
+  public static MEDIUM_SUBMIT(): HTMLElement { return document.getElementById("medium-submit");}
+  public static MEDIUM_NAME(): HTMLElement { return document.getElementById("medium-player-name");}
+  public static MEDIUM_ROLE(): HTMLElement { return document.getElementById("medium-player-role");}
 
   /* Role information */
   public static ROLE_NAME(): HTMLElement { return document.getElementById("roleName");}

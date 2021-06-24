@@ -7,6 +7,7 @@ import {DisplayManager} from "./DisplayManager";
 import {KickPlayerFromGameAPI} from "../api/KickPlayerFromGameAPI";
 import {SubState} from "../model/SubState";
 import {ProcessVote} from "./ProcessVote";
+import {votingOption} from "./snippet/VotingOption";
 
 export class UpdateWithGameData {
   public static perform(data: GameData): void {
@@ -149,6 +150,42 @@ export class UpdateWithGameData {
     } else {
       DisplayManager.HideNightControls();
       DisplayManager.ResetNightControls();
+    }
+
+    // Medium Night
+    if (data.role === "Medium") {
+      // If SubState == Night Medium, show select.
+      if (data.substate === SubState.NIGHTTIME_MEDIUM.valueOf()) {
+        let options = "";
+        let index = 0;
+        while ( index < playersAliveAsList.length) {
+          if (playersAliveAsList[index] === "true" && playerRolesAsList[index] != "Medium" || playerRolesAsList[index] != "Narrator") {
+            options += votingOption(playerTokensAsList[index], playerNamesAsList[index]);
+          }
+          index++;
+        }
+        WebElements.MEDIUM_SELECTION().innerHTML = options;
+        WebElements.MEDIUM_ROW().style.display = "";
+        WebElements.MEDIUM_PRE_SELECT().style.display = "";
+        WebElements.MEDIUM_POST_SELECT().style.display = "none";
+      }
+
+      if (data.substate === SubState.NIGHTTIME_SELECTION.valueOf() || data.substate === SubState.NIGHTTIME_WOLVES.valueOf()) {
+        // Only update if filled
+        if (data.playerRoleChecked != undefined) {
+          WebElements.MEDIUM_PRE_SELECT().style.display = "none";
+          WebElements.MEDIUM_POST_SELECT().style.display = "";
+          WebElements.MEDIUM_ROW().style.display = "";
+
+          WebElements.MEDIUM_ROLE().innerHTML = data.playerRoleChecked;
+          WebElements.MEDIUM_NAME().innerHTML = data.playerNameChecked;
+        }
+      }
+    } else {
+      WebElements.MEDIUM_SELECTION().innerHTML = "";
+      WebElements.MEDIUM_PRE_SELECT().style.display = "none";
+      WebElements.MEDIUM_POST_SELECT().style.display = "none";
+      WebElements.MEDIUM_ROW().style.display = "none";
     }
 
     /*
